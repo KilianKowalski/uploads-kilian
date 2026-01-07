@@ -180,18 +180,14 @@
       gap: 12px;
       align-content: start;
     }
-    .image-box{
-      width: 100%;
-      aspect-ratio: 4 / 3;
-      border-radius: 16px;
-      border: 1px dashed #c9c9d3;
-      background: linear-gradient(135deg, #fff 0%, #fff2df 60%, #ffffff 100%);
-      display: grid;
-      place-items: center;
-      text-align: center;
-      padding: 14px;
-      color: #333;
-    }
+    .image-box {
+  width: 100%;
+  aspect-ratio: 4 / 3;   /* Box-Größe bleibt gleich */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;     /* Wichtig! */
+}
     .image-box strong{ font-family: "Montserrat", sans-serif; }
     .small{
       font-size: 14px;
@@ -279,12 +275,10 @@
       .contact{ grid-template-columns: 1fr; }
       .nav-links{ display:none; }
     }
-
-    .hero-logo {
-  max-width: 160px;   /* Größe des Logos */
-  width: 100%;
+    .hero-image {
+  width: 85%;           /* Bild wird größer/kleiner */
   height: auto;
-  object-fit: contain;
+  object-fit: cover;    /* Füllt den Platz schön */
     }
   </style>
 </head>
