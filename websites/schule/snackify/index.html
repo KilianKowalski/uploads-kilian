@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SNACKify</title>
+
+  <!-- Max. 2 Schriftarten: Systemschrift + eine Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #ffffff;
+      --text: #1a1a1a;
+      --muted: #555;
+      --card: #f7f7f9;
+      --accent: #ff8a00;   /* snackig-orange */
+      --accent2:#ffd18a;   /* helles orange */
+      --border:#e6e6ea;
+      --max: 1100px;
+      --radius: 18px;
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* 1. Schrift */
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3{
+      font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* 2. Schrift */
+      line-height: 1.2;
+      margin: 0 0 12px 0;
+    }
+    h1{ font-size: clamp(28px, 4vw, 46px); font-weight: 800; }
+    h2{ font-size: clamp(22px, 3vw, 30px); font-weight: 800; }
+    h3{ font-size: 20px; font-weight: 700; }
+
+    p{ margin: 0 0 14px 0; color: var(--muted); }
+
+    a{ color: inherit; }
+    .container{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 18px;
+    }
+
+    /* Header */
+    header{
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      z-index: 50;
+    }
+    .nav{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+    }
+    .brand{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .logo{
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: grid;
+      place-items: center;
+      font-family: "Montserrat", sans-serif;
+      font-weight: 800;
+      color: #111;
+    }
+    .brand strong{
+      font-family: "Montserrat", sans-serif;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+    .nav-links{
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .nav-links a{
+      text-decoration: none;
+      color: #222;
+      padding: 8px 10px;
+      border-radius: 12px;
+    }
+    .nav-links a:hover{
+      background: var(--card);
+    }
+
+    /* Hero */
+    .hero{
+      padding: 34px 0 18px;
+    }
+    .hero-grid{
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .hero-card{
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #fff 0%, #fff7ed 100%);
+      border-radius: var(--radius);
+      padding: 22px;
+      overflow: hidden;
+      position: relative;
+    }
+    .pill{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--border);
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 14px;
+    }
+    .pill span{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+    .hero-card p{
+      max-width: 60ch;
+      font-size: 16px;
+    }
+    .hero-actions{
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .btn{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      font-weight: 700;
+      background: #fff;
+    }
+    .btn.primary{
+      background: var(--accent);
+      border-color: transparent;
+      color: #1a1a1a;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0px); }
+
+    /* "Bild" / Platzhalter fürs Logo oder Snack-Foto */
+    .image-card{
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+    .image-box{
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 16px;
+      border: 1px dashed #c9c9d3;
+      background: linear-gradient(135deg, #fff 0%, #fff2df 60%, #ffffff 100%);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 14px;
+      color: #333;
+    }
+    .image-box strong{ font-family: "Montserrat", sans-serif; }
+    .small{
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* Sections */
+    section{
+      padding: 22px 0;
+    }
+    .section-head{
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .section-head p{ margin: 0; max-width: 70ch; }
+
+    /* Offer cards */
+    .grid3{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .card{
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .tag{
+      display: inline-block;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #fff7ed;
+      border: 1px solid #ffe1bd;
+      margin-bottom: 10px;
+    }
+    .price{
+      margin-top: 10px;
+      font-weight: 800;
+      color: #111;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    /* Contact */
+    .contact{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .contact .card p{ margin-bottom: 10px; }
+    .list{
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    /* Footer */
+    footer{
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      background: #fff;
+      padding: 18px 0;
+    }
+    .footer-grid{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px){
+      .hero-grid{ grid-template-columns: 1fr; }
+      .grid3{ grid-template-columns: 1fr; }
+      .contact{ grid-template-columns: 1fr; }
+      .nav-links{ display:none; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Kopfzeile / Navigation -->
+  <header>
+    <div class="container">
+      <div class="nav">
+        <a class="brand" href="#top">
+          <!-- Logo-Platzhalter: Du kannst hier später ein echtes Bild einsetzen -->
+          <div class="logo" aria-label="Snackify Logo">S</div>
+          <div>
+            <strong>Snackify</strong><br>
+            <span style="color:#666; font-size:13px;">Snack-Boxen für Pause, Party & Filmabend</span>
+          </div>
+        </a>
+
+        <nav class="nav-links" aria-label="Hauptnavigation">
+          <a href="#angebote">Angebote</a>
+          <a href="#ueber-uns">Über uns</a>
+          <a href="#kontakt">Kontakt</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero / Startbereich -->
+    <div class="container">
+      <section class="hero">
+        <div class="hero-grid">
+          <div class="hero-card">
+            <div class="pill"><span></span> schnell • lecker • fertig gepackt</div>
+            <h1>Snackify bringt dir die perfekte Snack-Box.</h1>
+            <p>
+              Wir stellen Snack-Boxen für verschiedene Anlässe zusammen – z. B. für die Schule,
+              den Filmabend oder eine Party. Alles ist übersichtlich gepackt und kann auf Wunsch
+              angepasst werden.
+            </p>
+
+            <div class="hero-actions">
+              <a class="btn primary" href="#angebote">Unsere Angebote</a>
+              <a class="btn" href="#kontakt">Kontakt aufnehmen</a>
+            </div>
+          </div>
+
+          <!-- Sinnvoll platzierte "Bilder"-Fläche -->
+          <aside class="image-card" aria-label="Logo oder Bild">
+            <div class="image-box">
+              <div>
+                <strong>Platz für euer Logo</strong><br>
+                <span style="color:#555; font-size:14px;">oder ein Snack-Foto</span>
+              </div>
+            </div>
+            <p class="small">
+              Tipp: Wenn du ein Bild nutzt, ersetze diesen Block später durch<br>
+              <code>&lt;img src="logo.png" alt="Snackify Logo"&gt;</code>
+            </p>
+          </aside>
+        </div>
+      </section>
+    </div>
+
+    <!-- Angebote -->
+    <div class="container">
+      <section id="angebote">
+        <div class="section-head">
+          <div>
+            <h2>Unsere Angebote</h2>
+            <p>3 Boxen-Ideen, die ihr auch mit eigenen Preisen/Optionen anpassen könnt.</p>
+          </div>
+        </div>
+
+        <div class="grid3">
+          <article class="card">
+            <div class="tag">🍿 Filmabend-Box</div>
+            <h3>Gemütlich snacken</h3>
+            <p>
+              Süßes + salziges Mix-Paket für einen entspannten Abend.
+              Optional mit „Extra Crunch“-Upgrade.
+            </p>
+            <div class="price">Preis: ab 4,99 €</div>
+          </article>
+
+          <article class="card">
+            <div class="tag">🎒 Pausen-Box</div>
+            <h3>Perfekt für die Schule</h3>
+            <p>
+              Praktisch, gut portioniert und schnell dabei.
+              Ideal für die Pause oder nach dem Sport.
+            </p>
+            <div class="price">Preis: ab 3,49 €</div>
+          </article>
+
+          <article class="card">
+            <div class="tag">🎉 Party-Box Mini</div>
+            <h3>Für Gäste & Gruppen</h3>
+            <p>
+              Kleine Boxen/Tüten für Gäste – z. B. 10 Stück für Geburtstage.
+              Sieht cool aus und ist sofort verteilt.
+            </p>
+            <div class="price">Preis: ab 0,99 € / Stück</div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <!-- Über uns -->
+    <div class="container">
+      <section id="ueber-uns">
+        <div class="section-head">
+          <div>
+            <h2>Über Snackify</h2>
+            <p>
+              Unser Team erstellt Snack-Boxen, die einfach praktisch sind: schnell gepackt,
+              sauber gestaltet und passend zum Anlass.
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Unsere Idee</h3>
+          <p>
+            Wir wollten ein Mini-Unternehmen, das jeder sofort versteht: Snack-Boxen,
+            die man direkt nutzen kann – ohne Stress, ohne langes Suchen.
+          </p>
+          <ul class="list">
+            <li>Übersichtliche Auswahl</li>
+            <li>Schöne Verpackung</li>
+            <li>Auf Wunsch anpassbar</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- Kontakt -->
+    <div class="container">
+      <section id="kontakt">
+        <div class="section-head">
+          <div>
+            <h2>Kontakt</h2>
+            <p>So erreicht ihr uns (Platzhalter – kannst du später anpassen).</p>
+          </div>
+        </div>
+
+        <div class="contact">
+          <div class="card">
+            <h3>Kontaktangaben</h3>
+            <p><strong>E-Mail:</strong> snackify@beispiel.de</p>
+            <p><strong>Telefon:</strong> 0123 456789</p>
+            <p><strong>Ort:</strong> (Eure Schule / euer Ort)</p>
+            <p class="small">Hinweis: Für die Abgabe könnt ihr echte Daten auch weglassen und „Schulprojekt“ schreiben.</p>
+          </div>
+
+          <div class="card">
+            <h3>Öffnungszeiten (optional)</h3>
+            <ul class="list">
+              <li>Mo–Fr: 14:00–18:00</li>
+              <li>Sa: 10:00–14:00</li>
+              <li>So: geschlossen</li>
+            </ul>
+            <p style="margin-top:12px;" class="small">
+              Oder ihr schreibt stattdessen: „Bestellung nach Absprache“.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Fußzeile -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>© <span id="year"></span> Snackify – Schulprojekt</div>
+        <div>Made by Team Snackify</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // kleines Extra: aktuelles Jahr (optional)
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
