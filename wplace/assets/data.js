@@ -7,21 +7,21 @@ window.WPLACE_DATA = {
   projects: [
     {
       id: "projekt-001",
-      title: "Projekt Beispiel (fertig)",
+      title: "Anti AfD QR-Code (fertig)",
       status: "done", // "done" oder "wip"
-      tags: ["politik", "collab"],
-      note: "Kurzer Platzhaltertext für die Galerie.",
+      tags: ["afd", "qr"],
+      note: "Ein rießen QR-Code, welcher zur Website "afd-verbot.jetzt" führt",
       // Koordinaten-Link: trag hier deinen echten Link ein
-      coordUrl: "https://example.com/wplace?x=123&y=456&z=8",
+      coordUrl: "https://wplace.live/?lat=50.027787542721&lng=10.89571255927732&zoom=15.99542564250443",
       // Vorschaubild (Galerie/Highlights)
-      coverImg: "assets/img/placeholder-done.png",
+      coverImg: "assets/img/projekt-001_cover.png",
 
       // Blog/At-Work:
-      updatedAt: "2026-01-06",
+      updatedAt: "2026-01-08",
       wipText:
-        "Längerer Text möglich: Was war die Idee, wer hat geholfen, welche Farben fehlen noch, etc.",
-      progressImg: "assets/img/placeholder-progress.png",
-      finalImg: "assets/img/placeholder-done.png"
+        "Die Idee war es, Menschen das wirklich ein AfD Verbot - welches wirklich nötig wäre - noch mehr unter die Nase zu reiben. Gemeinsam mit Steve und Milouch stellte ich es fertig.",
+      progressImg: "assets/img/projekt-001_progress.png",
+      finalImg: "assets/img/projekt-001_final.png"
     },
 
     {
