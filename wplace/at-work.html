@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wplace Projekte – At-Work</title>
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">⬛</span>
+        <span class="brand-text">Wplace Projekte</span>
+      </a>
+
+      <nav class="nav">
+        <a class="nav-link" href="index.html">Start</a>
+        <a class="nav-link" href="galerie.html">Galerie</a>
+        <a class="nav-link active" href="at-work.html">At-Work</a>
+      </nav>
+
+      <button class="btn btn-ghost" id="themeToggle" type="button" aria-label="Theme umschalten">
+        🌙/☀️
+      </button>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="section-head">
+      <h1>At-Work</h1>
+      <p class="muted">
+        Wie ein Blog: längere Texte + aktueller Stand + am Ende das fertige Ergebnis.
+      </p>
+    </div>
+
+    <div class="toolbar">
+      <div class="search">
+        <input id="searchInputWip" type="search" placeholder="Suchen (Titel, Text, Tags) …" />
+      </div>
+
+      <select id="sortWip" class="select">
+        <option value="newest">Neueste zuerst</option>
+        <option value="oldest">Älteste zuerst</option>
+      </select>
+    </div>
+
+    <div class="post-list" id="wipPosts">
+      <!-- JS füllt das -->
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <b>Wplace Projekte</b>
+        <div class="muted small">At-Work – Fortschritt & Notizen.</div>
+      </div>
+      <div class="footer-right small muted">
+        <span id="year"></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
