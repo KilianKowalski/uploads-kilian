@@ -10,7 +10,7 @@ window.WPLACE_DATA = {
       title: "Anti AfD QR-Code (fertig)",
       status: "done", // "done" oder "wip"
       tags: ["afd", "qr"],
-      note: "Ein rießen QR-Code, welcher zur Website "afd-verbot.jetzt" führt",
+      note: "Ein rießen QR-Code, welcher zur Website \"afd-verbot.jetzt\" führt",
       // Koordinaten-Link: trag hier deinen echten Link ein
       coordUrl: "https://wplace.live/?lat=50.027787542721&lng=10.89571255927732&zoom=15.99542564250443",
       // Vorschaubild (Galerie/Highlights)
