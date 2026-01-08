@@ -14,14 +14,14 @@ window.WPLACE_DATA = {
       // Koordinaten-Link: trag hier deinen echten Link ein
       coordUrl: "https://wplace.live/?lat=50.027787542721&lng=10.89571255927732&zoom=13.875655009550293",
       // Vorschaubild (Galerie/Highlights)
-      coverImg: "assets/img/projekt-001_cover.png",
+      coverImg: "assets/img/projekt-001/projekt-001_cover.png",
 
       // Blog/At-Work:
       updatedAt: "2026-01-08",
       wipText:
         "Die Idee war es, Menschen das wirklich ein AfD Verbot - welches wirklich nötig wäre - noch mehr unter die Nase zu reiben. Gemeinsam mit Steve und Milouch stellte ich es fertig.",
-      progressImg: "assets/img/projekt-001_progress.png",
-      finalImg: "assets/img/projekt-001_final.png"
+      progressImg: "assets/img/projekt-001/projekt-001_progress.png",
+      finalImg: "assets/img/projekt-001/projekt-001_final.png"
     },
 
     {
