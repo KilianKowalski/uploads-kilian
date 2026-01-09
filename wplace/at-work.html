@@ -3,23 +3,51 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Wplace Antifa – At-Work</title>
+  <title>Wplace Antifa – At work</title>
 
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 
 <body>
+
+  <!-- Zugangshinweis / Consent Overlay -->
+  <div id="consentOverlay" class="consent-overlay" role="dialog" aria-modal="true" aria-labelledby="consentTitle">
+    <div class="consent-modal">
+      <h2 id="consentTitle">Hinweis vor dem Betreten</h2>
+      <p>
+        Diese Seite ist ein Community-Projekt. Zugriff nur, wenn du dem Folgenden zustimmst:
+      </p>
+
+      <ul>
+        <li>Ich respektiere <b>LGBTQ+</b> und alle Identitäten.</li>
+        <li>Ich bin <b>gegen Rassismus</b> und jede Form von Diskriminierung.</li>
+        <li>Ich bin gegen <b>Antisemitismus</b> und Hass.</li>
+        <li>Ich bin gegen <b>Sexismus</b>, Ableismus und menschenverachtende Inhalte.</li>
+        <li>Ich sabotiere keine Projekte und verhalte mich respektvoll.</li>
+      </ul>
+
+      <p class="consent-small">
+        Wenn du nicht zustimmst, klicke auf „Ablehnen“.
+      </p>
+
+      <div class="consent-actions">
+        <button id="consentDecline" class="consent-btn consent-decline" type="button">Ablehnen</button>
+        <button id="consentAccept" class="consent-btn consent-accept" type="button">Akzeptieren</button>
+      </div>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.html">
-        <span class="brand-text">Wplace Projekte</span>
+        <span class="brand-text">Wplace Antifa</span>
       </a>
 
       <nav class="nav">
         <a class="nav-link" href="index.html">Start</a>
         <a class="nav-link" href="galerie.html">Galerie</a>
-        <a class="nav-link active" href="at-work.html">At-Work</a>
+        <a class="nav-link active" href="at-work.html">At work</a>
       </nav>
 
       <button class="btn btn-ghost" id="themeToggle" type="button" aria-label="Theme umschalten">
@@ -30,9 +58,9 @@
 
   <main class="container section">
     <div class="section-head">
-      <h1>At-Work</h1>
+      <h1>At work</h1>
       <p class="muted">
-        Wie ein Blog: längere Texte + aktueller Stand + am Ende das fertige Ergebnis.
+        Ein kleiner Blog zu den offenstehenden Aufgaben.
       </p>
     </div>
 
