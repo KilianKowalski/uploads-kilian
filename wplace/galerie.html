@@ -10,6 +10,34 @@
 </head>
 
 <body>
+
+  <!-- Zugangshinweis / Consent Overlay -->
+  <div id="consentOverlay" class="consent-overlay" role="dialog" aria-modal="true" aria-labelledby="consentTitle">
+    <div class="consent-modal">
+      <h2 id="consentTitle">Hinweis vor dem Betreten</h2>
+      <p>
+        Diese Seite ist ein Community-Projekt. Zugriff nur, wenn du dem Folgenden zustimmst:
+      </p>
+
+      <ul>
+        <li>Ich respektiere <b>LGBTQ+</b> und alle Identitäten.</li>
+        <li>Ich bin <b>gegen Rassismus</b> und jede Form von Diskriminierung.</li>
+        <li>Ich bin gegen <b>Antisemitismus</b> und Hass.</li>
+        <li>Ich bin gegen <b>Sexismus</b>, Ableismus und menschenverachtende Inhalte.</li>
+        <li>Ich sabotiere keine Projekte und verhalte mich respektvoll.</li>
+      </ul>
+
+      <p class="consent-small">
+        Wenn du nicht zustimmst, klicke auf „Ablehnen“.
+      </p>
+
+      <div class="consent-actions">
+        <button id="consentDecline" class="consent-btn consent-decline" type="button">Ablehnen</button>
+        <button id="consentAccept" class="consent-btn consent-accept" type="button">Akzeptieren</button>
+      </div>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.html">
