@@ -1,4 +1,47 @@
 (function () {
+  // ---------- Consent Gate (1x akzeptieren, dann gespeichert) ----------
+  (function consentGate(){
+    const overlay = document.getElementById("consentOverlay");
+    if (!overlay) return;
+
+    const acceptBtn = document.getElementById("consentAccept");
+    const declineBtn = document.getElementById("consentDecline");
+
+    const KEY = "wplace_antifa_consent_v1";
+    const redirectUrl = "https://afd-verbot.de/";
+
+    const accepted = localStorage.getItem(KEY) === "accepted";
+
+    function show(){
+      overlay.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    }
+
+    function hide(){
+      overlay.style.display = "none";
+      document.body.style.overflow = "";
+    }
+
+    if (!accepted) show();
+
+    acceptBtn?.addEventListener("click", () => {
+      localStorage.setItem(KEY, "accepted");
+      hide();
+    });
+
+    declineBtn?.addEventListener("click", () => {
+      window.location.href = redirectUrl;
+    });
+
+    // Klick auf Hintergrund soll NICHT schließen
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+  })();
+
   const data = window.WPLACE_DATA || { projects: [], helperCount: 0 };
   const projects = Array.isArray(data.projects) ? data.projects : [];
 
