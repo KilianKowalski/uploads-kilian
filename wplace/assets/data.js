@@ -29,7 +29,7 @@ window.WPLACE_DATA = {
       title: "Antifa Logo (fertig)",
       status: "done", // "done" oder "wip"
       tags: ["161", "afa", "antifa"],
-      note: "Klassisches Antifa Logo.",
+      note: "Klassisches Antifa Logo",
       // Koordinaten-Link: trag hier deinen echten Link ein
       coordUrl: "https://wplace.live/?lat=50.287823275144575&lng=10.513564121777332&zoom=13.813709128010684",
       // Vorschaubild (Galerie/Highlights)
@@ -41,6 +41,25 @@ window.WPLACE_DATA = {
         "An dieser Stelle befand sich bereits ein fertiges Logo der Antifaschistischen Aktion. Meiner Meinung nach war es etwas zu klein, weshalb ich begann, die Konturen eines größeren Logos darüber zu pixeln. Dank der Hilfe von Tabby, Earthflare, Flair Bear, Greedy und vielen anderen konnte dieses Projekt umgesetzt werden. Da ich hauptsächlich politische Kunstwerke starte, ist es völlig normal, mit Leuten zu rechnen, die diese gerne zerstören wollen. Auch hier war das der Fall. Und obwohl ich das Schematic verloren hatte, hielt dieses Werk stand! Danke an alle Pixler:innen!",
       progressImg: "assets/img/projekt-002/projekt-002_progress.png",
       finalImg: "assets/img/projekt-002/projekt-002_final.png"
+    },
+
+    {
+      id: "projekt-003",
+      title: "FCK NZS",
+      status: "wip", // "done" oder "wip"
+      tags: ["fcknzs", "nzs", "161"],
+      note: "FCK NZS aber mal in richtig groß",
+      // Koordinaten-Link: trag hier deinen echten Link ein
+      coordUrl: "https://wplace.live/?lat=50.32128052607682&lng=10.667021153027314&zoom=12.806498399076112",
+      // Vorschaubild (Galerie/Highlights)
+      coverImg: "assets/img/projekt-003/projekt-003_cover.png",
+
+      // Blog/At-Work:
+      updatedAt: "2026-01-12",
+      wipText:
+        "Stand: \"FCK NZS\" ist bereits gepixelt worden, es wurde sich entschlossen den Hintergrund in Regenbogenfarben aufleuchten zu lassen.\n\nTo-Do:\n- Die restl. Regenbogenfarben ausfüllen",
+      progressImg: "assets/img/projekt-003/projekt-003_progress.png",
+      finalImg: "assets/img/projekt-003/projekt-003_final.png"
     },
   ]
 };
