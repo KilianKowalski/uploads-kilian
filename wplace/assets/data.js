@@ -38,7 +38,7 @@ window.WPLACE_DATA = {
       // Blog/At-Work:
       updatedAt: "2026-01-08",
       wipText:
-        "An dieser Stelle war ein bereits fertiges Logo der Antifaschistischen Aktion. Meiner Meinung war es etwas zu klein und habe dann begonnen, die Konturen eines größeren darüber zu Pixeln. Dank der Hilfe von Tabby, Earthflare, Flair Bear, Greedy und vielen anderen wurde dieses Projekt durchgesetzt. Danke an alle Pixler:innen!",
+        "An dieser Stelle befand sich bereits ein fertiges Logo der Antifaschistischen Aktion. Meiner Meinung nach war es etwas zu klein, weshalb ich begann, die Konturen eines größeren Logos darüber zu pixeln. Dank der Hilfe von Tabby, Earthflare, Flair Bear, Greedy und vielen anderen konnte dieses Projekt umgesetzt werden. Da ich hauptsächlich politische Kunstwerke starte, ist es völlig normal, mit Leuten zu rechnen, die diese gerne zerstören wollen. Auch hier war das der Fall. Und obwohl ich das Schematic verloren hatte, hielt dieses Werk stand! Danke an alle Pixler:innen!",
       progressImg: "assets/img/projekt-002/projekt-002_progress.png",
       finalImg: "assets/img/projekt-002/projekt-002_final.png"
     },
