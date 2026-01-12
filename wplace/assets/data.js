@@ -57,7 +57,7 @@ window.WPLACE_DATA = {
       // Blog/At-Work:
       updatedAt: "2026-01-12",
       wipText:
-        "Stand: \"FCK NZS\" ist bereits gepixelt worden, es wurde sich entschlossen den Hintergrund in Regenbogenfarben aufleuchten zu lassen.\n\nTo-Do:\n- Die restl. Regenbogenfarben ausfüllen",
+        "Stand: \"FCK NZS\" ist bereits gepixelt worden, es wurde sich dazu entschlossen den Hintergrund in Regenbogenfarben aufleuchten zu lassen.\n\nTo-Do:\n- Die restl. Regenbogenfarben ausfüllen",
       progressImg: "assets/img/projekt-003/projekt-003_progress.png",
       finalImg: "assets/img/projekt-003/projekt-003_final.png"
     },
