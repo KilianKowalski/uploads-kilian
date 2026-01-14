@@ -55,9 +55,9 @@ window.WPLACE_DATA = {
       coverImg: "assets/img/projekt-003/projekt-003_cover.png",
 
       // Blog/At-Work:
-      updatedAt: "2026-01-12",
+      updatedAt: "2026-01-13",
       wipText:
-        "Stand: \"FCK NZS\" ist bereits gepixelt worden, es wurde sich dazu entschlossen den Hintergrund in Regenbogenfarben aufleuchten zu lassen.\n\nTo-Do:\n- Die restl. Regenbogenfarben ausfüllen",
+        "Das Pixelart ust jetzt offiziell fertig. Den kompletten Nachbericht gibt es noch die Tage... (Bild nicht mehr aktuell)",
       progressImg: "assets/img/projekt-003/projekt-003_progress.png",
       finalImg: "assets/img/projekt-003/projekt-003_final.png"
     },
