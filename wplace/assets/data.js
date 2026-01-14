@@ -46,7 +46,7 @@ window.WPLACE_DATA = {
     {
       id: "projekt-003",
       title: "FCK NZS",
-      status: "wip", // "done" oder "wip"
+      status: "done", // "done" oder "wip"
       tags: ["fcknzs", "nzs", "161"],
       note: "FCK NZS aber mal in richtig groß",
       // Koordinaten-Link: trag hier deinen echten Link ein
@@ -57,7 +57,7 @@ window.WPLACE_DATA = {
       // Blog/At-Work:
       updatedAt: "2026-01-13",
       wipText:
-        "Das Pixelart ust jetzt offiziell fertig. Den kompletten Nachbericht gibt es noch die Tage... (Bild nicht mehr aktuell)",
+        "Das Pixelart ist jetzt offiziell fertig. Den kompletten Nachbericht gibt es noch die Tage... (Bild nicht mehr aktuell)",
       progressImg: "assets/img/projekt-003/projekt-003_progress.png",
       finalImg: "assets/img/projekt-003/projekt-003_final.png"
     },
