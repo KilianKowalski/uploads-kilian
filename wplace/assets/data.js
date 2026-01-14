@@ -19,7 +19,7 @@ window.WPLACE_DATA = {
       // Blog/At-Work:
       updatedAt: "2026-01-05",
       wipText:
-        "Die Idee war es, Menschen das wirklich ein AfD Verbot - welches wirklich nötig wäre - noch mehr unter die Nase zu reiben. Gemeinsam mit Steve und Milouch stellte ich es fertig.",
+        "Die Idee war, Menschen die Notwendigkeit eines AfD-Verbots noch deutlicher vor Augen zu führen. Gemeinsam mit Steve und Milouch habe ich das Projekt fertiggestellt.",
       progressImg: "assets/img/projekt-001/projekt-001_progress.png",
       finalImg: "assets/img/projekt-001/projekt-001_final.png"
     },
