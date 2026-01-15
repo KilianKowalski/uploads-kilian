@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>404 - Page Not Found</title>
+
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#0f172a;
+      --card: rgba(255,255,255,.07);
+      --border: rgba(255,255,255,.14);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --accent:#60a5fa;
+      --accent2:#a78bfa;
+      --danger:#fb7185;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      padding:24px;
+
+      /* animierter Hintergrund */
+      background:
+        radial-gradient(900px 500px at 20% 20%, rgba(96,165,250,.18), transparent 60%),
+        radial-gradient(900px 500px at 80% 80%, rgba(167,139,250,.18), transparent 60%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      animation: bgPulse 6s ease-in-out infinite;
+    }
+
+    @keyframes bgPulse{
+      0%,100% { filter: brightness(1); }
+      50%     { filter: brightness(1.08); }
+    }
+
+    .card{
+      max-width: 920px;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* schimmernde “Glow”-Deko */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-120px;
+      background: radial-gradient(circle at 30% 30%, rgba(96,165,250,.22), transparent 40%),
+                  radial-gradient(circle at 70% 70%, rgba(167,139,250,.22), transparent 40%);
+      animation: glowMove 7s ease-in-out infinite;
+      pointer-events:none;
+    }
+
+    @keyframes glowMove{
+      0%,100% { transform: translate(0,0); }
+      50%     { transform: translate(40px,-30px); }
+    }
+
+    .content{
+      position: relative; /* damit es über dem ::before liegt */
+      z-index: 1;
+    }
+
+    .big404{
+      font-size: clamp(90px, 16vw, 200px);
+      margin: 0;
+      letter-spacing: -6px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip:text;
+      color: transparent;
+
+      /* 404-Animation */
+      animation: floaty 2.8s ease-in-out infinite;
+      text-shadow: 0 0 30px rgba(96,165,250,.10);
+    }
+
+    @keyframes floaty{
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-10px); }
+    }
+
+    h1{
+      margin: 8px 0 6px;
+      font-size: clamp(22px, 3.2vw, 34px);
+    }
+
+    p{
+      margin: 10px 0 18px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .path{
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 14px;
+      word-break: break-all;
+      background: rgba(255,255,255,.04);
+      margin-bottom: 18px;
+    }
+
+    .actions{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top: 6px;
+    }
+
+    a.btn{
+      text-decoration:none;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 650;
+      background: rgba(255,255,255,.05);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      will-change: transform;
+    }
+
+    a.btn:hover{
+      transform: translateY(-2px) scale(1.02);
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.22);
+    }
+
+    a.primary{
+      border: none;
+      background: linear-gradient(90deg, rgba(96,165,250,.95), rgba(167,139,250,.95));
+      color:#06101f;
+    }
+
+    footer{
+      margin-top: 22px;
+      font-size: 13px;
+      color: rgba(255,255,255,.45);
+    }
+
+    .note{
+      margin-top: 10px;
+      display:inline-block;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(251,113,133,.35);
+      background: rgba(251,113,133,.08);
+      color: rgba(255,255,255,.85);
+      font-size: 13px;
+    }
+
+    /* kleine “Erschrecken”-Animation fürs Emoji beim Laden */
+    .oops{
+      display:inline-block;
+      animation: pop 650ms ease-out 1;
+    }
+    @keyframes pop{
+      0%   { transform: scale(.7) rotate(-6deg); opacity:.3; }
+      60%  { transform: scale(1.12) rotate(4deg); opacity:1; }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="content">
+      <div class="big404">404</div>
+
+      <h1>Seite nicht gefunden <span class="oops">🫠</span></h1>
+
+      <p>
+        Diese Seite gibt es nicht.<br>
+        Ich hab auch ehrlich gesagt <strong>keine Ahnung, wo du hinwolltest.</strong>
+      </p>
+
+      <div class="path" id="path">/</div>
+
+      <div class="actions">
+        <a class="btn primary" href="/">🏠 Startseite (Da ist eh nichts)</a>
+        <a class="btn" href="javascript:history.back()">↩️ Zurück</a>
+      </div>
+
+      <footer>
+        404-Seite von <strong>kilianlol.com</strong> · © Kilian
+        <div class="note">Hinweis: Nicht rechts wählen. Bitteeee</div>
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    // Zeigt den angefragten Pfad an
+    const p = (location.pathname + location.search + location.hash) || "/";
+    document.getElementById("path").textContent = p;
+  </script>
+</body>
+</html>
