@@ -49,9 +49,9 @@ window.WPLACE_DATA = {
       coordUrl: "https://wplace.live/?lat=50.32128052607682&lng=10.667021153027314&zoom=12.806498399076112",
       coverImg: "assets/img/projekt-003/projekt-003_cover.png",
 
-      updatedAt: "2026-01-13",
+      updatedAt: "2026-01-15",
       wipText:
-        "Eigentlich wäre das Artwork bereits fertig, allerdings gibt es noch Unstimmigkeiten aufgrund des Backgrounds. Ich werde in ein paar Minuten eine Umfrage verlinken, damit ihr darüber abstimmen könnt, wie es weitergeht.",
+        "Ein Klassiker, wir kennen es alle. Das FCK NZS Schild mal in groß. Wir sind in der Zielgeraden der Fertigstellung. Mit rießiger Unterstützung von Tabby, Greedy, den Pixel Punks und weiteren!",
       progressImg: "assets/img/projekt-003/projekt-003_progress.png",
       finalImg: "assets/img/projekt-003/projekt-003_final.png",
 
