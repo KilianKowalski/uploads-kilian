@@ -33,7 +33,6 @@
       window.location.href = redirectUrl;
     });
 
-    // Klick auf Hintergrund soll NICHT schließen
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) {
         e.preventDefault();
@@ -76,9 +75,18 @@
     return `<span class="badge wip">In Arbeit</span>`;
   }
 
+  function pollBtnHTML(p){
+    const poll = p.poll || {};
+    if (!poll.enabled) return "";
+    const slug = poll.slug || p.id;
+    return `<a class="btn btn-primary" href="umfragen.html#${esc(slug)}">Umfrage</a>`;
+  }
+
   function cardHTML(p) {
     const tags = (p.tags || []).slice(0, 4).map(t => `<span class="badge">#${esc(t)}</span>`).join("");
     const note = p.note ? `<p class="muted" style="margin:0">${esc(p.note)}</p>` : "";
+    const pollBtn = pollBtnHTML(p);
+
     return `
       <article class="card">
         <img class="card-img" src="${esc(p.coverImg || "assets/img/placeholder-wip.png")}" alt="${esc(p.title)}" loading="lazy">
@@ -91,7 +99,10 @@
           ${note}
           <div class="card-actions" style="margin-top:10px">
             <a class="btn btn-secondary" href="${esc(p.coordUrl || "#")}" target="_blank" rel="noopener">Zu den Koordinaten</a>
-            ${p.status === "wip" ? `<a class="btn btn-ghost" href="at-work.html#${esc(p.id)}">Zum At-Work-Post</a>` : `<a class="btn btn-ghost" href="galerie.html#${esc(p.id)}">In Galerie öffnen</a>`}
+            ${p.status === "wip"
+              ? `<a class="btn btn-ghost" href="at-work.html#${esc(p.id)}">Zum At-Work-Post</a>`
+              : `<a class="btn btn-ghost" href="galerie.html#${esc(p.id)}">In Galerie öffnen</a>`}
+            ${pollBtn}
           </div>
         </div>
       </article>
@@ -192,6 +203,8 @@
     const tags = (p.tags || []).map(t => `<span class="badge">#${esc(t)}</span>`).join("");
     const updated = p.updatedAt ? `<span class="badge">Update: ${esc(p.updatedAt)}</span>` : "";
     const text = esc(p.wipText || p.note || "").replaceAll("\n", "<br>");
+    const pollBtn = pollBtnHTML(p);
+
     return `
       <article class="post" id="${esc(p.id)}">
         <div class="post-head">
@@ -213,6 +226,7 @@
           <div class="post-footer-left">
             <a class="btn btn-secondary" href="${esc(p.coordUrl || "#")}" target="_blank" rel="noopener">Zu den Koordinaten</a>
             <a class="btn btn-ghost" href="galerie.html#${esc(p.id)}">In Galerie</a>
+            ${pollBtn}
           </div>
           <div class="muted small">Final/Preview:</div>
         </div>
@@ -251,5 +265,50 @@
     searchInputWip?.addEventListener("input", renderWip);
     sortWip?.addEventListener("change", renderWip);
     renderWip();
+  }
+
+  // ---------- Umfragen-Seite ----------
+  const pollsWrap = document.getElementById("pollsWrap");
+  const pollsEmpty = document.getElementById("pollsEmpty");
+
+  if (pollsWrap) {
+    const polls = projects
+      .filter(p => p.poll && p.poll.enabled && p.poll.embedUrl)
+      .map(p => {
+        const poll = p.poll || {};
+        const slug = poll.slug || p.id;
+        const title = poll.title || `Umfrage: ${p.title}`;
+        const embedUrl = poll.embedUrl;
+
+        return `
+          <article class="panel poll-panel" id="${esc(slug)}">
+            <div class="poll-head">
+              <div>
+                <h2 class="panel-title" style="margin:0 0 6px">${esc(title)}</h2>
+                <div class="muted small">Projekt: <a class="nav-link" style="padding:0; border:0" href="galerie.html#${esc(p.id)}">${esc(p.title)}</a></div>
+              </div>
+              <div class="poll-actions">
+                <a class="btn btn-secondary" href="${esc(p.coordUrl || "#")}" target="_blank" rel="noopener">Zu den Koordinaten</a>
+                <a class="btn btn-ghost" href="at-work.html#${esc(p.id)}">Zum Post</a>
+              </div>
+            </div>
+
+            <div class="poll-embed">
+              <iframe src="${esc(embedUrl)}" loading="lazy" title="${esc(title)}"></iframe>
+            </div>
+
+            <div class="muted small" style="margin-top:10px">
+              Wenn das Formular nicht lädt: <a class="nav-link" style="padding:0; border:0" href="${esc(embedUrl.replace("?embedded=true",""))}" target="_blank" rel="noopener">Formular direkt öffnen</a>
+            </div>
+          </article>
+        `;
+      });
+
+    if (polls.length === 0) {
+      pollsWrap.innerHTML = "";
+      if (pollsEmpty) pollsEmpty.style.display = "block";
+    } else {
+      pollsWrap.innerHTML = polls.join("");
+    }
   }
 })();
