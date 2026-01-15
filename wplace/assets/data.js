@@ -62,7 +62,7 @@ window.WPLACE_DATA = {
         title: "Abstimmung: Background bei FCK NZS",
         // Ersetze das mit deinem echten Embed-Link:
         // Google Form -> "Senden" -> "<>" Einbetten -> Link kopieren (endet meist mit ?embedded=true)
-        embedUrl: "https://docs.google.com/forms/d/e/DEIN_FORM_ID/viewform?embedded=true"
+        embedUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdNJPKY7UxY25rSgIU1S3J6JUveu0wZ2Q0NIGwkQqA-JAklHQ/viewform?embedded=true"
       }
     },
   ]
