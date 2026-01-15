@@ -57,7 +57,7 @@ window.WPLACE_DATA = {
       // Blog/At-Work:
       updatedAt: "2026-01-13",
       wipText:
-        "Das Pixelart ist jetzt offiziell fertig. Den kompletten Nachbericht gibt es noch die Tage... (Bild nicht mehr aktuell)",
+        "Eigentlich wäre das Artwork bereits fertig, allerdings gibt es noch Unstimmigkeiten aufgrund des Backgrounds. Ich werde in ein paar Minuten eine Umfrage verlinken, damit ihr darüber abstimmen könnt, wie es weitergeht.",
       progressImg: "assets/img/projekt-003/projekt-003_progress.png",
       finalImg: "assets/img/projekt-003/projekt-003_final.png"
     },
