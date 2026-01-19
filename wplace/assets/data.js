@@ -51,13 +51,13 @@ window.WPLACE_DATA = {
 
       updatedAt: "2026-01-15",
       wipText:
-        "Ein Klassiker, wir kennen es alle. Das FCK NZS Schild mal in groß. Wir sind in der Zielgeraden der Fertigstellung. Mit rießiger Unterstützung von Tabby, Greedy, den Pixel Punks und weiteren!",
+        "Ein Klassiker, wir kennen es alle. Das FCK NZS Schild mal in groß. Es wurde erfolgreich fertiggestellt. Mit rießiger Unterstützung von Tabby, Greedy, den Pixel Punks und weiteren!",
       progressImg: "assets/img/projekt-003/projekt-003_progress.png",
       finalImg: "assets/img/projekt-003/projekt-003_final.png",
 
       // HIER aktivieren + Link eintragen:
       poll: {
-        enabled: true,
+        enabled: false,
         slug: "projekt-003-bg",
         title: "Abstimmung: Background bei FCK NZS",
         // Ersetze das mit deinem echten Embed-Link:
