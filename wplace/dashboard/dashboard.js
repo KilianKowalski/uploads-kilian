@@ -161,7 +161,7 @@ ${list.map(projectToJS).join(",\n")}
 };`;
 };
 
-qs("repoBtn").href = "https://github.com/DEINNAME/DEINREPO";
+qs("repoBtn").href = "https://github.com/KilianKowalski/uploads-kilian/blob/main/wplace/assets/data.js";
 
 document.querySelectorAll("input,textarea,select")
   .forEach(el=>el.addEventListener("input",updateAll));
