@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wplace Antifa – Dashboard</title>
+
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+  <main class="container section">
+    <h1>🛠️ Wplace Projekt-Dashboard</h1>
+    <p class="muted">
+      Internes Tool zum Erstellen & Bearbeiten von Projekten.<br>
+      Änderungen werden <b>nicht automatisch gespeichert</b>.
+    </p>
+
+    <div class="panel">
+      <h2 class="panel-title">Projekt auswählen</h2>
+      <select id="projectSelect" class="select"></select>
+      <button id="newProjectBtn" class="btn btn-secondary">➕ Neues Projekt</button>
+      <div id="idWarning" class="warn" style="display:none"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">Projekt-Daten</h2>
+
+      <div class="form-grid">
+        <input id="id" placeholder="ID (z. B. projekt-004)">
+        <input id="title" placeholder="Titel">
+
+        <select id="status">
+          <option value="wip">In Arbeit</option>
+          <option value="done">Fertig</option>
+        </select>
+
+        <input id="tags" placeholder="Tags (kommagetrennt)">
+        <input id="coordUrl" placeholder="Koordinaten-URL">
+
+        <input id="coverImg" placeholder="Cover-Bild">
+        <input id="progressImg" placeholder="Progress-Bild">
+        <input id="finalImg" placeholder="Final-Bild">
+
+        <input id="updatedAt" placeholder="Update-Datum (YYYY-MM-DD)">
+      </div>
+
+      <textarea id="note" placeholder="Kurz-Notiz"></textarea>
+      <textarea id="wipText" placeholder="At-Work-Text"></textarea>
+
+      <div id="imgWarnings" class="warn"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">Umfrage</h2>
+      <label><input type="checkbox" id="pollEnabled"> Umfrage aktiv</label>
+      <input id="pollSlug" placeholder="Slug">
+      <input id="pollTitle" placeholder="Titel">
+      <input id="pollEmbed" placeholder="Embed URL">
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">🔍 Vorschau – Galerie</h2>
+      <div id="previewCard"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">📝 Vorschau – At-Work Post</h2>
+      <div id="previewWip"></div>
+    </div>
+
+    <div class="panel actions">
+      <button id="generateBlock" class="btn btn-secondary">📋 Codeblock</button>
+      <button id="generateFull" class="btn btn-primary">📦 Ganze data.js</button>
+      <a id="repoBtn" class="btn btn-ghost" target="_blank">🔗 GitHub</a>
+    </div>
+
+    <pre id="output" class="panel" style="white-space:pre-wrap"></pre>
+  </main>
+
+  <script src="../assets/data.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
