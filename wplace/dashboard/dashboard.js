@@ -2,7 +2,11 @@ const data = window.WPLACE_DATA;
 let projects = JSON.parse(JSON.stringify(data.projects));
 const qs = id => document.getElementById(id);
 
-const esc = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+const esc = s => String(s ?? "")
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;");
 
 function imgPath(p){
   if(!p) return "../assets/img/placeholder-wip.png";
@@ -65,7 +69,7 @@ function collect(){
   };
 }
 
-/* ---------- Image Paths ---------- */
+/* ---------- Bildpfade ---------- */
 qs("genImgPaths").onclick = ()=>{
   const id = qs("id").value.trim();
   if(!id) return;
@@ -75,37 +79,23 @@ qs("genImgPaths").onclick = ()=>{
   updateAll();
 };
 
-/* ---------- Status Checks ---------- */
+/* ---------- Status ---------- */
 function checkAll(p){
-  let ok = [];
   let warn = [];
 
   if(!p.id) warn.push("ID fehlt");
   else if(projects.some(x=>x.id===p.id)) warn.push("ID existiert bereits");
-  else ok.push("ID eindeutig");
 
-  if(p.title) ok.push("Titel gesetzt");
-  else warn.push("Titel fehlt");
-
-  if(p.coordUrl) ok.push("Koordinaten vorhanden");
-  else warn.push("Koordinaten fehlen");
-
-  if(p.coverImg) ok.push("Cover gesetzt");
-  else warn.push("Cover fehlt");
-
-  if(p.progressImg) ok.push("Progress gesetzt");
-  else warn.push("Progress fehlt");
-
-  if(p.finalImg) ok.push("Final gesetzt");
-  else warn.push("Final fehlt");
+  if(!p.title) warn.push("Titel fehlt");
+  if(!p.coordUrl) warn.push("Koordinaten fehlen");
+  if(!p.coverImg) warn.push("Cover fehlt");
+  if(!p.progressImg) warn.push("Progress fehlt");
+  if(!p.finalImg) warn.push("Final fehlt");
 
   qs("projectStatus").className = "panel status " + (warn.length ? "warn":"ok");
   qs("projectStatus").innerHTML = warn.length
     ? "🟡 Unvollständig:<br>– " + warn.join("<br>– ")
     : "🟢 Projekt vollständig – bereit für Veröffentlichung";
-
-  qs("idStatus").className = "status " + (warn.length ? "warn":"ok");
-  qs("idStatus").textContent = warn.length ? warn[0] : "✅ Alles ok";
 }
 
 /* ---------- Preview ---------- */
@@ -140,13 +130,30 @@ function updateAll(){
   checkAll(p);
 }
 
-/* ---------- Export ---------- */
+/* ---------- Code Export ---------- */
 function projectToJS(p){
   return JSON.stringify(p,null,2).replace(/"([^"]+)":/g,"$1:");
 }
 
+function copyOutput(){
+  const text = qs("output").textContent.trim();
+  if(!text) return;
+
+  navigator.clipboard.writeText(text);
+
+  const btn = qs("copyCode");
+  btn.classList.add("copied");
+  qs("copyStatus").textContent = "✅ Code kopiert";
+
+  setTimeout(()=>{
+    btn.classList.remove("copied");
+    qs("copyStatus").textContent = "";
+  },1200);
+}
+
 qs("generateBlock").onclick = ()=>{
   qs("output").textContent = projectToJS(collect()) + ",";
+  copyOutput();
 };
 
 qs("generateFull").onclick = ()=>{
@@ -159,8 +166,12 @@ qs("generateFull").onclick = ()=>{
 ${list.map(projectToJS).join(",\n")}
   ]
 };`;
+  copyOutput();
 };
 
+qs("copyCode").onclick = copyOutput;
+
+/* ---------- Events ---------- */
 qs("newProjectBtn").onclick = ()=>loadProject();
 
 qs("projectSelect").onchange = e=>{
