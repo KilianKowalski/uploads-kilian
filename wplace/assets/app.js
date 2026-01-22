@@ -11,9 +11,11 @@
     overlay.innerHTML = `
       <div class="consent-modal">
         <h2>Hinweis vor dem Betreten</h2>
-        <p>Community-Projekt – nur bei Zustimmung.</p>
-        <button id="accept" class="consent-btn consent-accept">Akzeptieren</button>
-        <button id="decline" class="consent-btn consent-decline">Ablehnen</button>
+        <p>Community-Projekt – Zugriff nur bei Zustimmung.</p>
+        <div class="consent-actions">
+          <button id="accept" class="consent-btn consent-accept">Akzeptieren</button>
+          <button id="decline" class="consent-btn consent-decline">Ablehnen</button>
+        </div>
       </div>`;
     document.body.appendChild(overlay);
 
@@ -26,7 +28,7 @@
     };
   })();
 
-  const data = window.WPLACE_DATA || {projects:[], helperCount:0};
+  const data = window.WPLACE_DATA || {projects:[]};
   const projects = [...data.projects];
 
   const esc = s => String(s??"")
@@ -38,7 +40,7 @@
   /* ---------- 🆕 Neu Badge ---------- */
   function isNew(d){
     if(!d) return false;
-    const diff = (Date.now()-new Date(d)) / 86400000;
+    const diff = (Date.now() - new Date(d)) / 86400000;
     return diff <= 7;
   }
 
@@ -60,9 +62,11 @@
     return `<a class="btn btn-primary" href="umfragen.html#${esc(slug)}">Umfrage</a>`;
   }
 
-  /* ---------- Projekt Render ---------- */
+  /* ---------- Projekt (At-Work-Style) ---------- */
   function projectHTML(p){
-    const tags = (p.tags||[]).map(t=>`<span class="badge">#${esc(t)}</span>`).join("");
+    const tags = (p.tags||[])
+      .map(t=>`<span class="badge">#${esc(t)}</span>`).join("");
+
     const text = p.status==="wip"
       ? esc(p.wipText||"").replaceAll("\n","<br>")
       : esc(p.note||"");
@@ -75,7 +79,10 @@
     return `
       <article class="post" id="${esc(p.id)}">
         <div class="post-head">
-          <img class="post-thumb" src="${esc(img||"assets/img/placeholder-wip.png")}" loading="lazy">
+          <img class="post-thumb"
+               src="${esc(img || "assets/img/placeholder-progress.png")}"
+               loading="lazy">
+
           <div>
             <h2 class="post-title">${esc(p.title)}</h2>
             <div class="card-meta">
@@ -86,15 +93,22 @@
           </div>
         </div>
 
-        <div class="post-text">${text || "<i>Kein Text.</i>"}</div>
+        <div class="post-text">
+          ${text || "<i>Kein Text hinterlegt.</i>"}
+        </div>
 
         <div class="post-footer">
           <div class="post-footer-left">
-            <a class="btn btn-secondary" href="${esc(p.coordUrl||"#")}" target="_blank">Koordinaten</a>
+            <a class="btn btn-secondary"
+               href="${esc(p.coordUrl||"#")}"
+               target="_blank" rel="noopener">
+              Zu den Koordinaten
+            </a>
             ${pollBtn(p)}
           </div>
+
           <div class="muted small">
-            Update: ${esc(p.updatedAt||"–")}
+            Update: ${esc(p.updatedAt || "–")}
           </div>
         </div>
       </article>
@@ -111,7 +125,9 @@
       let items = [...projects];
 
       // 🔽 Neueste zuerst
-      items.sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")));
+      items.sort((a,b)=>
+        String(b.updatedAt||"").localeCompare(String(a.updatedAt||""))
+      );
 
       if(filter.value!=="all"){
         items = items.filter(p=>p.status===filter.value);
@@ -125,8 +141,9 @@
         );
       }
 
-      list.innerHTML = items.map(projectHTML).join("") ||
-        `<div class="panel"><b>Keine Projekte gefunden.</b></div>`;
+      list.innerHTML = items.length
+        ? items.map(projectHTML).join("")
+        : `<div class="panel"><b>Keine Projekte gefunden.</b></div>`;
     }
 
     search.oninput = render;
