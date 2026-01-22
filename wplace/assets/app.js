@@ -30,7 +30,7 @@
   })();
 
   const data = window.WPLACE_DATA || { projects: [], helperCount: 0 };
-  const projects = [...data.projects];
+  const projects = Array.isArray(data.projects) ? data.projects : [];
 
   const esc = s =>
     String(s ?? "")
@@ -63,6 +63,20 @@
     const slug = p.poll.slug || p.id;
     return `<a class="btn btn-primary" href="umfragen.html#${esc(slug)}">Umfrage</a>`;
   }
+
+  /* ---------- 🧮 STARTSEITE: STATISTIKEN (FIX) ---------- */
+  const statTotal = document.getElementById("statTotal");
+  const statDone = document.getElementById("statDone");
+  const statWip = document.getElementById("statWip");
+  const statHelpers = document.getElementById("statHelpers");
+
+  if (statTotal) statTotal.textContent = projects.length;
+  if (statDone) statDone.textContent =
+    projects.filter(p => p.status === "done").length;
+  if (statWip) statWip.textContent =
+    projects.filter(p => p.status === "wip").length;
+  if (statHelpers) statHelpers.textContent =
+    data.helperCount || "–";
 
   /* ---------- Projekt (At-Work-Style, voll sichtbar) ---------- */
   function projectHTML(p){
@@ -117,7 +131,7 @@
     `;
   }
 
-  /* ---------- Projekte-Seite ---------- */
+  /* ---------- PROJEKTE-SEITE ---------- */
   const list = document.getElementById("projectsList");
   if (list) {
     const search = document.getElementById("searchProjects");
@@ -153,7 +167,7 @@
     render();
   }
 
-  /* ---------- Startseite: Highlights bleiben ---------- */
+  /* ---------- STARTSEITE: HIGHLIGHTS ---------- */
   const highlightsGrid = document.getElementById("highlightsGrid");
   if (highlightsGrid) {
     const sorted = [...projects]
@@ -162,7 +176,9 @@
 
     highlightsGrid.innerHTML = sorted.map(p => `
       <div class="card">
-        <img class="card-img" src="${esc(p.coverImg || "assets/img/placeholder-wip.png")}">
+        <img class="card-img"
+             src="${esc(p.coverImg || "assets/img/placeholder-wip.png")}"
+             loading="lazy">
         <div class="card-body">
           <h3 class="card-title">${esc(p.title)}</h3>
           <div class="card-meta">
