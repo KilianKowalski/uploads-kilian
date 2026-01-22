@@ -2,28 +2,17 @@ const data = window.WPLACE_DATA;
 let projects = JSON.parse(JSON.stringify(data.projects));
 const qs = id => document.getElementById(id);
 
-/* ---------- Helpers ---------- */
-const esc = s =>
-  String(s ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;");
+const esc = s => String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
 
 function imgPath(p){
   if(!p) return "../assets/img/placeholder-wip.png";
-  if(p.startsWith("http://") || p.startsWith("https://")) return p;
+  if(p.startsWith("http")) return p;
   if(p.startsWith("assets/")) return "../" + p;
   return p;
 }
 
-function imageExists(url){
-  return new Promise(resolve=>{
-    const img = new Image();
-    img.onload = ()=>resolve(true);
-    img.onerror = ()=>resolve(false);
-    img.src = url;
-  });
+function today(){
+  return new Date().toISOString().slice(0,10);
 }
 
 /* ---------- Dropdown ---------- */
@@ -33,19 +22,28 @@ function refreshSelect(){
     projects.map(p=>`<option value="${p.id}">${p.title}</option>`).join("");
 }
 
-/* ---------- Load ---------- */
-function loadProject(p){
-  ["id","title","coordUrl","coverImg","progressImg","finalImg","updatedAt","note","wipText"]
-    .forEach(k=>qs(k).value = p[k] || "");
+/* ---------- Auto ID ---------- */
+function suggestId(){
+  const nums = projects
+    .map(p=>parseInt(p.id?.split("-")[1]))
+    .filter(n=>!isNaN(n));
+  const next = (Math.max(0,...nums)+1).toString().padStart(3,"0");
+  return `projekt-${next}`;
+}
 
+/* ---------- Load ---------- */
+function loadProject(p={}){
+  qs("id").value = p.id || suggestId();
+  qs("title").value = p.title || "";
   qs("status").value = p.status || "wip";
   qs("tags").value = (p.tags||[]).join(", ");
-
-  qs("pollEnabled").checked = !!p.poll?.enabled;
-  qs("pollSlug").value = p.poll?.slug || "";
-  qs("pollTitle").value = p.poll?.title || "";
-  qs("pollEmbed").value = p.poll?.embedUrl || "";
-
+  qs("coordUrl").value = p.coordUrl || "";
+  qs("updatedAt").value = p.updatedAt || today();
+  qs("coverImg").value = p.coverImg || "";
+  qs("progressImg").value = p.progressImg || "";
+  qs("finalImg").value = p.finalImg || "";
+  qs("note").value = p.note || "";
+  qs("wipText").value = p.wipText || "";
   updateAll();
 }
 
@@ -57,53 +55,67 @@ function collect(){
     status: qs("status").value,
     tags: qs("tags").value.split(",").map(t=>t.trim()).filter(Boolean),
     coordUrl: qs("coordUrl").value,
+    updatedAt: qs("updatedAt").value,
     coverImg: qs("coverImg").value,
     progressImg: qs("progressImg").value,
     finalImg: qs("finalImg").value,
-    updatedAt: qs("updatedAt").value,
     note: qs("note").value,
     wipText: qs("wipText").value,
-    poll: qs("pollEnabled").checked
-      ? { enabled:true, slug:qs("pollSlug").value, title:qs("pollTitle").value, embedUrl:qs("pollEmbed").value }
-      : { enabled:false }
+    poll:{enabled:false}
   };
 }
 
-/* ---------- Warnings ---------- */
-async function updateWarnings(p){
-  let warns = [];
+/* ---------- Image Paths ---------- */
+qs("genImgPaths").onclick = ()=>{
+  const id = qs("id").value.trim();
+  if(!id) return;
+  qs("coverImg").value = `assets/img/${id}/${id}_cover.png`;
+  qs("progressImg").value = `assets/img/${id}/${id}_progress.png`;
+  qs("finalImg").value = `assets/img/${id}/${id}_final.png`;
+  updateAll();
+};
 
-  for(const [label,url] of [
-    ["Cover",p.coverImg],
-    ["Progress",p.progressImg],
-    ["Final",p.finalImg]
-  ]){
-    if(url && !(await imageExists(imgPath(url)))){
-      warns.push(`⚠️ ${label}-Bild fehlt: ${url}`);
-    }
-  }
+/* ---------- Status Checks ---------- */
+function checkAll(p){
+  let ok = [];
+  let warn = [];
 
-  qs("imgWarnings").innerHTML = warns.join("<br>");
+  if(!p.id) warn.push("ID fehlt");
+  else if(projects.some(x=>x.id===p.id)) warn.push("ID existiert bereits");
+  else ok.push("ID eindeutig");
 
-  const dup = projects.some(x=>x.id===p.id);
-  qs("idWarning").style.display = dup ? "block" : "none";
-  qs("idWarning").textContent = dup ? "⚠️ Diese ID existiert bereits." : "";
+  if(p.title) ok.push("Titel gesetzt");
+  else warn.push("Titel fehlt");
+
+  if(p.coordUrl) ok.push("Koordinaten vorhanden");
+  else warn.push("Koordinaten fehlen");
+
+  if(p.coverImg) ok.push("Cover gesetzt");
+  else warn.push("Cover fehlt");
+
+  if(p.progressImg) ok.push("Progress gesetzt");
+  else warn.push("Progress fehlt");
+
+  if(p.finalImg) ok.push("Final gesetzt");
+  else warn.push("Final fehlt");
+
+  qs("projectStatus").className = "panel status " + (warn.length ? "warn":"ok");
+  qs("projectStatus").innerHTML = warn.length
+    ? "🟡 Unvollständig:<br>– " + warn.join("<br>– ")
+    : "🟢 Projekt vollständig – bereit für Veröffentlichung";
+
+  qs("idStatus").className = "status " + (warn.length ? "warn":"ok");
+  qs("idStatus").textContent = warn.length ? warn[0] : "✅ Alles ok";
 }
 
-/* ---------- Previews ---------- */
+/* ---------- Preview ---------- */
 function previewCard(p){
   return `
-  <article class="card" style="max-width:420px">
+  <article class="card">
     <img class="card-img" src="${esc(imgPath(p.coverImg))}">
     <div class="card-body">
-      <h3 class="card-title">${esc(p.title||"Titel")}</h3>
-      <div class="card-meta">
-        <span class="badge ${p.status==="done"?"done":"wip"}">
-          ${p.status==="done"?"Fertig":"In Arbeit"}
-        </span>
-        ${(p.tags||[]).map(t=>`<span class="badge">#${esc(t)}</span>`).join("")}
-      </div>
-      ${p.note?`<p class="muted">${esc(p.note)}</p>`:""}
+      <h3>${esc(p.title||"Titel")}</h3>
+      <span class="badge ${p.status==="done"?"done":"wip"}">${p.status}</span>
     </div>
   </article>`;
 }
@@ -113,37 +125,25 @@ function previewWip(p){
   <article class="post">
     <div class="post-head">
       <img class="post-thumb" src="${esc(imgPath(p.progressImg||p.coverImg))}">
-      <div>
-        <h2 class="post-title">${esc(p.title||"Titel")}</h2>
-        <span class="badge wip">In Arbeit</span>
-      </div>
+      <h2>${esc(p.title||"Titel")}</h2>
     </div>
     <div class="post-text">${esc(p.wipText||"").replaceAll("\n","<br>")}</div>
-    <div style="padding:12px">
-      <img class="card-img" src="${esc(imgPath(p.finalImg||p.coverImg))}">
-    </div>
+    <img class="card-img" src="${esc(imgPath(p.finalImg||p.coverImg))}">
   </article>`;
 }
 
-async function updateAll(){
+/* ---------- Update ---------- */
+function updateAll(){
   const p = collect();
   qs("previewCard").innerHTML = previewCard(p);
   qs("previewWip").innerHTML = previewWip(p);
-  await updateWarnings(p);
+  checkAll(p);
 }
 
 /* ---------- Export ---------- */
 function projectToJS(p){
   return JSON.stringify(p,null,2).replace(/"([^"]+)":/g,"$1:");
 }
-
-/* ---------- Events ---------- */
-qs("projectSelect").onchange = e=>{
-  const p = projects.find(x=>x.id===e.target.value);
-  if(p) loadProject(p);
-};
-
-qs("newProjectBtn").onclick = ()=>loadProject({});
 
 qs("generateBlock").onclick = ()=>{
   qs("output").textContent = projectToJS(collect()) + ",";
@@ -161,9 +161,20 @@ ${list.map(projectToJS).join(",\n")}
 };`;
 };
 
-qs("repoBtn").href = "https://github.com/KilianKowalski/uploads-kilian/blob/main/wplace/assets/data.js";
+qs("newProjectBtn").onclick = ()=>loadProject();
+
+qs("projectSelect").onchange = e=>{
+  const p = projects.find(x=>x.id===e.target.value);
+  if(p) loadProject(p);
+};
+
+qs("repoBtn").href = "https://github.com/DEINNAME/DEINREPO";
 
 document.querySelectorAll("input,textarea,select")
-  .forEach(el=>el.addEventListener("input",updateAll));
+  .forEach(el=>el.addEventListener("input",()=>{
+    qs("updatedAt").value = today();
+    updateAll();
+  }));
 
 refreshSelect();
+loadProject();
