@@ -1,0 +1,38 @@
+.form-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap:10px;
+}
+
+textarea,
+input,
+select{
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+}
+
+textarea{min-height:110px}
+
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.warn{
+  margin-top:8px;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(255,92,122,.15);
+  border:1px solid rgba(255,92,122,.4);
+  color:#ff5c7a;
+  font-size:.9rem;
+}
+
+#wipPreview .post{
+  max-width:700px;
+}
