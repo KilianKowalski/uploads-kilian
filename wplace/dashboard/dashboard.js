@@ -10,9 +10,15 @@ const esc = s =>
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;");
 
+function imgPath(p){
+  if(!p) return "../assets/img/placeholder-wip.png";
+  if(p.startsWith("http://") || p.startsWith("https://")) return p;
+  if(p.startsWith("assets/")) return "../" + p;
+  return p;
+}
+
 function imageExists(url){
   return new Promise(resolve=>{
-    if(!url) return resolve(false);
     const img = new Image();
     img.onload = ()=>resolve(true);
     img.onerror = ()=>resolve(false);
@@ -29,8 +35,8 @@ function refreshSelect(){
 
 /* ---------- Load ---------- */
 function loadProject(p){
-  for(const k of ["id","title","coordUrl","coverImg","progressImg","finalImg","updatedAt","note","wipText"])
-    qs(k).value = p[k] || "";
+  ["id","title","coordUrl","coverImg","progressImg","finalImg","updatedAt","note","wipText"]
+    .forEach(k=>qs(k).value = p[k] || "");
 
   qs("status").value = p.status || "wip";
   qs("tags").value = (p.tags||[]).join(", ");
@@ -65,21 +71,19 @@ function collect(){
 
 /* ---------- Warnings ---------- */
 async function updateWarnings(p){
-  const imgs = [
-    ["Cover", p.coverImg],
-    ["Progress", p.progressImg],
-    ["Final", p.finalImg]
-  ];
+  let warns = [];
 
-  let warnings = [];
-
-  for(const [label,url] of imgs){
-    if(url && !(await imageExists("../"+url))){
-      warnings.push(`⚠️ ${label}-Bild nicht gefunden: ${url}`);
+  for(const [label,url] of [
+    ["Cover",p.coverImg],
+    ["Progress",p.progressImg],
+    ["Final",p.finalImg]
+  ]){
+    if(url && !(await imageExists(imgPath(url)))){
+      warns.push(`⚠️ ${label}-Bild fehlt: ${url}`);
     }
   }
 
-  qs("imgWarnings").innerHTML = warnings.join("<br>");
+  qs("imgWarnings").innerHTML = warns.join("<br>");
 
   const dup = projects.some(x=>x.id===p.id);
   qs("idWarning").style.display = dup ? "block" : "none";
@@ -90,8 +94,7 @@ async function updateWarnings(p){
 function previewCard(p){
   return `
   <article class="card" style="max-width:420px">
-    <img class="card-img" src="${esc(p.coverImg||"../assets/img/placeholder-wip.png")}"
-         onerror="this.src='../assets/img/placeholder-wip.png'">
+    <img class="card-img" src="${esc(imgPath(p.coverImg))}">
     <div class="card-body">
       <h3 class="card-title">${esc(p.title||"Titel")}</h3>
       <div class="card-meta">
@@ -109,19 +112,15 @@ function previewWip(p){
   return `
   <article class="post">
     <div class="post-head">
-      <img class="post-thumb" src="${esc(p.progressImg||p.coverImg||"../assets/img/placeholder-progress.png")}"
-           onerror="this.src='../assets/img/placeholder-progress.png'">
+      <img class="post-thumb" src="${esc(imgPath(p.progressImg||p.coverImg))}">
       <div>
         <h2 class="post-title">${esc(p.title||"Titel")}</h2>
-        <div class="card-meta">
-          <span class="badge wip">In Arbeit</span>
-        </div>
+        <span class="badge wip">In Arbeit</span>
       </div>
     </div>
     <div class="post-text">${esc(p.wipText||"").replaceAll("\n","<br>")}</div>
     <div style="padding:12px">
-      <img class="card-img" src="${esc(p.finalImg||p.coverImg||"../assets/img/placeholder-wip.png")}"
-           onerror="this.src='../assets/img/placeholder-wip.png'">
+      <img class="card-img" src="${esc(imgPath(p.finalImg||p.coverImg))}">
     </div>
   </article>`;
 }
