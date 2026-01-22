@@ -185,7 +185,7 @@
             ${badgeStatus(p)}
             ${badgeNew(p)}
           </div>
-          <a class="btn btn-secondary" href="projekte.html#${esc(p.id)}">
+          <a class="btn btn-secondary" href="projekte#${esc(p.id)}">
             Zum Projekt
           </a>
         </div>
