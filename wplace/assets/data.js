@@ -72,7 +72,7 @@ window.WPLACE_DATA = {
     "qr"
   ],
   coordUrl: "https://wplace.live/?lat=50.027787542721&lng=10.89571255927732&zoom=13.875655009550293",
-  updatedAt: "2026-01-23",
+  updatedAt: "2025-10-19",
   coverImg: "assets/img/projekt-001/projekt-001_cover.png",
   progressImg: "assets/img/projekt-001/projekt-001_progress.png",
   finalImg: "assets/img/projekt-001/projekt-001_final.png",
@@ -84,7 +84,7 @@ window.WPLACE_DATA = {
 },
 {
   id: "projekt-002",
-  title: "Antifa Logo (fertig)",
+  title: "Antifa Logo",
   status: "done",
   tags: [
     "161",
