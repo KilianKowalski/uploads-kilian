@@ -2,25 +2,6 @@ window.WPLACE_DATA = {
   helperCount: 0,
   projects: [
 {
-  id: "projekt-001",
-  title: "Anti AfD QR-Code (fertig)",
-  status: "done",
-  tags: [
-    "afd",
-    "qr"
-  ],
-  note: "Ein rießen QR-Code, welcher zur Website \"afd-verbot.jetzt\" führt",
-  coordUrl: "https://wplace.live/?lat=50.027787542721&lng=10.89571255927732&zoom=13.875655009550293",
-  coverImg: "assets/img/projekt-001/projekt-001_cover.png",
-  updatedAt: "2026-01-05",
-  wipText: "Die Idee war, Menschen die Notwendigkeit eines AfD-Verbots noch deutlicher vor Augen zu führen. Gemeinsam mit Steve und Milouch habe ich das Projekt fertiggestellt.",
-  progressImg: "assets/img/projekt-001/projekt-001_progress.png",
-  finalImg: "assets/img/projekt-001/projekt-001_final.png",
-  poll: {
-    enabled: false
-  }
-},
-{
   id: "projekt-002",
   title: "Antifa Logo (fertig)",
   status: "done",
@@ -98,6 +79,25 @@ window.WPLACE_DATA = {
   finalImg: "assets/img/projekt-005/projekt-005_final.png",
   note: "Klare Botschaft. Muss man nichts zu sagen",
   wipText: "Ein deutliches Statement gegen Faschismus. Die Idee zu diesem Motiv stammt von den Pixel Punks und ist noch in Arbeit.",
+  poll: {
+    enabled: false
+  }
+},
+{
+  id: "projekt-001",
+  title: "Anti AfD QR-Code",
+  status: "done",
+  tags: [
+    "afd",
+    "qr"
+  ],
+  coordUrl: "https://wplace.live/?lat=50.027787542721&lng=10.89571255927732&zoom=13.875655009550293",
+  updatedAt: "2026-01-23",
+  coverImg: "assets/img/projekt-001/projekt-001_cover.png",
+  progressImg: "assets/img/projekt-001/projekt-001_progress.png",
+  finalImg: "assets/img/projekt-001/projekt-001_final.png",
+  note: "Ein rießen QR-Code, welcher zur Website \"afd-verbot.jetzt\" führt",
+  wipText: "Die Idee war, Menschen die Notwendigkeit eines AfD-Verbots noch deutlicher vor Augen zu führen. Gemeinsam mit Steve und Milouch habe ich das Projekt fertiggestellt.",
   poll: {
     enabled: false
   }
