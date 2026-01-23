@@ -81,6 +81,26 @@ window.WPLACE_DATA = {
   poll: {
     enabled: false
   }
+},
+{
+  id: "projekt-005",
+  title: "Faschismus stinkt!",
+  status: "wip",
+  tags: [
+    "faschismus",
+    "spray",
+    "einhorn"
+  ],
+  coordUrl: "https://wplace.live/?lat=48.50944312386456&lng=13.109501621777323&zoom=12.776771121554157",
+  updatedAt: "2026-01-23",
+  coverImg: "assets/img/projekt-005/projekt-005_cover.png",
+  progressImg: "assets/img/projekt-005/projekt-005_progress.png",
+  finalImg: "assets/img/projekt-005/projekt-005_final.png",
+  note: "Klare Botschaft. Muss man nichts zu sagen",
+  wipText: "Ein deutliches Statement gegen Faschismus. Die Idee zu diesem Motiv stammt von den Pixel Punks und ist noch in Arbeit.",
+  poll: {
+    enabled: false
+  }
 }
   ]
 };
