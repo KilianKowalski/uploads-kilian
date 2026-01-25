@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Visual Website Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h2>Website Builder</h2>
+      <form id="siteForm">
+        <label>Seitentitel
+          <input type="text" id="siteTitle" placeholder="Meine Website" />
+        </label>
+
+        <label>Beschreibung
+          <textarea id="siteDescription" placeholder="Kurzbeschreibung"></textarea>
+        </label>
+
+        <label>Primärfarbe
+          <input type="color" id="primaryColor" value="#6366f1" />
+        </label>
+
+        <label>Logo / Bild
+          <input type="file" id="logoUpload" accept="image/*" />
+        </label>
+
+        <label>Favicon
+          <input type="file" id="faviconUpload" accept="image/*" />
+        </label>
+
+        <button type="button" id="downloadBtn">Website herunterladen (ZIP)</button>
+      </form>
+    </aside>
+
+    <main class="preview">
+      <iframe id="previewFrame"></iframe>
+      <pre id="codeOutput"></pre>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
