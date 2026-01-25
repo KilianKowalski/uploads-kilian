@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>NEOSEARCH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00ffff">
+
+<style>
+:root{
+  --bg:#050505;
+  --text:#ffffff;
+  --accent:cyan;
+  --glass:rgba(255,255,255,0.08);
+}
+
+*{
+  box-sizing:border-box;
+  font-family:system-ui,sans-serif;
+  cursor:none;
+}
+
+body{
+  margin:0;
+  height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;
+  perspective:1200px;
+}
+
+/* WebGL Shader */
+#gl{
+  position:fixed;
+  inset:0;
+  z-index:0;
+}
+
+/* Custom Cursor */
+.cursor{
+  position:fixed;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:2px solid var(--accent);
+  box-shadow:0 0 30px var(--accent);
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  z-index:999;
+  transition:width .15s,height .15s;
+}
+
+/* 3D Scene */
+.scene{
+  position:relative;
+  z-index:2;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* 3D Panel */
+.panel{
+  width:min(90%,700px);
+  padding:32px;
+  background:var(--glass);
+  backdrop-filter:blur(25px);
+  border-radius:26px;
+  box-shadow:0 40px 120px rgba(0,255,255,.45);
+  transform-style:preserve-3d;
+  transition:transform .12s;
+}
+
+/* Title */
+h1{
+  text-align:center;
+  letter-spacing:.45em;
+  margin-bottom:28px;
+  text-shadow:0 0 40px var(--accent);
+}
+
+/* Input */
+input{
+  width:100%;
+  padding:20px;
+  font-size:1.3rem;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:var(--text);
+  caret-color:var(--accent);
+}
+
+input::placeholder{
+  opacity:.4;
+}
+</style>
+</head>
+
+<body>
+
+<!-- WebGL Background -->
+<canvas id="gl"></canvas>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+
+<!-- UI -->
+<div class="scene">
+  <form class="panel" id="form">
+    <h1>NEOSEARCH</h1>
+    <input id="input" placeholder="SUCHEN…" autofocus>
+  </form>
+</div>
+
+<script>
+/* =====================
+   PWA Service Worker
+===================== */
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+
+/* =====================
+   Custom Cursor
+===================== */
+const cursor=document.getElementById("cursor");
+addEventListener("mousemove",e=>{
+  cursor.style.left=e.clientX+"px";
+  cursor.style.top=e.clientY+"px";
+});
+
+/* =====================
+   3D Parallax UI
+===================== */
+const panel=document.querySelector(".panel");
+addEventListener("mousemove",e=>{
+  const x=(e.clientX/innerWidth-.5)*22;
+  const y=(e.clientY/innerHeight-.5)*-22;
+  panel.style.transform=`rotateY(${x}deg) rotateX(${y}deg)`;
+});
+
+/* =====================
+   Mobile Haptics
+===================== */
+const vibrate=p=>navigator.vibrate&&navigator.vibrate(p);
+
+/* =====================
+   Search → Google
+===================== */
+const form=document.getElementById("form");
+const input=document.getElementById("input");
+
+form.onsubmit=e=>{
+  e.preventDefault();
+  const q=input.value.trim();
+  if(!q)return;
+  vibrate([30,30,60]);
+  location.href="https://www.google.com/search?q="+encodeURIComponent(q);
+};
+
+/* =====================
+   WEBGL SHADER
+===================== */
+const canvas=document.getElementById("gl");
+const gl=canvas.getContext("webgl");
+
+function resize(){
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
+  gl.viewport(0,0,canvas.width,canvas.height);
+}
+resize();
+addEventListener("resize",resize);
+
+const vs=gl.createShader(gl.VERTEX_SHADER);
+gl.shaderSource(vs,`
+attribute vec2 p;
+void main(){
+  gl_Position=vec4(p,0.,1.);
+}`);
+gl.compileShader(vs);
+
+const fs=gl.createShader(gl.FRAGMENT_SHADER);
+gl.shaderSource(fs,`
+precision highp float;
+uniform float t;
+uniform vec2 r;
+void main(){
+  vec2 uv=gl_FragCoord.xy/r;
+  float wave=sin(uv.x*10.0+t)*0.2;
+  vec3 col=vec3(
+    0.1+0.6*sin(t+uv.y*8.0),
+    0.8*uv.x,
+    1.0
+  );
+  gl_FragColor=vec4(col+wave,1.);
+}`);
+gl.compileShader(fs);
+
+const prog=gl.createProgram();
+gl.attachShader(prog,vs);
+gl.attachShader(prog,fs);
+gl.linkProgram(prog);
+gl.useProgram(prog);
+
+const buf=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([
+-1,-1, 1,-1, -1,1,
+-1,1, 1,-1, 1,1
+]),gl.STATIC_DRAW);
+
+const loc=gl.getAttribLocation(prog,"p");
+gl.enableVertexAttribArray(loc);
+gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+
+const ut=gl.getUniformLocation(prog,"t");
+const ur=gl.getUniformLocation(prog,"r");
+
+let time=0;
+function loop(){
+  time+=0.01;
+  gl.uniform1f(ut,time);
+  gl.uniform2f(ur,canvas.width,canvas.height);
+  gl.drawArrays(gl.TRIANGLES,0,6);
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+
+</body>
+</html>
