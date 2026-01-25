@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini Website Builder</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#7c5cff; --muted:#9aa4b2; --glass: rgba(255,255,255,0.04);
+      --radius:12px; --maxw:1100px;
+    }
+    body{
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#071028 0%, #071a2b 100%);
+      color:#e6eef8; margin:0; padding:40px; display:flex; justify-content:center;
+    }
+    .wrap{width:100%; max-width:var(--maxw); display:grid; grid-template-columns:420px 1fr; gap:28px;}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:20px; border-radius:var(--radius); box-shadow:0 6px 30px rgba(2,6,23,0.6);}
+    h2{margin:0 0 12px 0; font-size:18px; color:#fff;}
+    label{display:block; font-size:13px; color:var(--muted); margin-top:12px;}
+    input[type="text"], input[type="file"], textarea, select{
+      width:100%; margin-top:8px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.04);
+      background:transparent; color:inherit; outline:none;
+    }
+    textarea{min-height:90px; resize:vertical;}
+    .btn{display:inline-flex; gap:10px; align-items:center; background:linear-gradient(90deg,var(--accent),#5ad0ff); color:#041025; padding:10px 14px; border-radius:10px; cursor:pointer; border:none; font-weight:600; margin-top:14px;}
+    .small{font-size:13px; color:var(--muted);}
+    .preview{padding:20px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); min-height:520px; overflow:auto;}
+    .site{
+      background:linear-gradient(180deg,#ffffff05,#00000005); border-radius:10px; padding:28px; color:#0b1220; background-color:#f8fafc;
+    }
+    .hero{display:flex; gap:20px; align-items:center;}
+    .hero img{width:96px; height:96px; object-fit:cover; border-radius:12px; box-shadow:0 6px 20px rgba(12,18,30,0.12);}
+    .hero h1{margin:0; font-size:28px;}
+    .hero p{margin:6px 0 0 0; color:#334155;}
+    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-top:18px;}
+    .card{background:white; padding:12px; border-radius:10px; color:#0b1220; box-shadow:0 6px 18px rgba(2,6,23,0.06);}
+    .controls-row{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
+    footer{margin-top:18px; font-size:13px; color:#64748b;}
+    .muted{color:var(--muted);}
+    @media (max-width:980px){ .wrap{grid-template-columns:1fr; padding-bottom:60px;} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h2>Website Builder</h2>
+      <div class="small">Fülle die Felder aus, lade Bilder hoch und klicke auf ZIP erstellen.</div>
+
+      <label>Titel der Seite</label>
+      <input id="siteTitle" type="text" placeholder="Mein tolles Projekt" value="Meine Beispielseite">
+
+      <label>Kurze Beschreibung</label>
+      <textarea id="siteDesc" placeholder="Eine kurze Beschreibung für Meta und Hero">Eine moderne, minimalistische Beispielseite.</textarea>
+
+      <label>Favicon hochladen</label>
+      <input id="faviconFile" type="file" accept="image/*">
+
+      <label>Bilder hochladen (mehrere möglich)</label>
+      <input id="imageFiles" type="file" accept="image/*" multiple>
+
+      <label>Primärfarbe</label>
+      <input id="primaryColor" type="text" value="#7c5cff" placeholder="#7c5cff">
+
+      <div class="controls-row">
+        <button id="previewBtn" class="btn">Live Preview</button>
+        <button id="generateBtn" class="btn">ZIP erstellen und herunterladen</button>
+      </div>
+
+      <div style="margin-top:14px;" class="small muted">Hinweis: Alle Dateien werden lokal im Browser verarbeitet. Keine Daten werden gesendet.</div>
+    </div>
+
+    <div class="panel preview">
+      <h2>Live Preview</h2>
+      <div id="previewArea" class="site">
+        <!-- dynamischer Inhalt -->
+        <div class="hero">
+          <img id="previewFavicon" src="https://via.placeholder.com/96" alt="favicon">
+          <div>
+            <h1 id="previewTitle">Meine Beispielseite</h1>
+            <p id="previewDesc">Eine moderne, minimalistische Beispielseite.</p>
+          </div>
+        </div>
+        <div class="grid" id="previewGrid">
+          <div class="card">Beispielinhalt 1</div>
+          <div class="card">Beispielinhalt 2</div>
+          <div class="card">Beispielinhalt 3</div>
+        </div>
+        <footer>Erstellt mit dem Mini Website Builder</footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bibliotheken -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <script>
+    // Helfer
+    const $ = id => document.getElementById(id);
+
+    function updatePreview(){
+      const title = $('siteTitle').value || 'Meine Seite';
+      const desc = $('siteDesc').value || '';
+      $('previewTitle').textContent = title;
+      $('previewDesc').textContent = desc;
+
+      const favFile = $('faviconFile').files[0];
+      if(favFile){
+        const url = URL.createObjectURL(favFile);
+        $('previewFavicon').src = url;
+      } else {
+        $('previewFavicon').src = 'https://via.placeholder.com/96';
+      }
+
+      // Bilder
+      const grid = $('previewGrid');
+      grid.innerHTML = '';
+      const files = Array.from($('imageFiles').files).slice(0,6);
+      if(files.length === 0){
+        grid.innerHTML = '<div class="card">Beispielinhalt 1</div><div class="card">Beispielinhalt 2</div><div class="card">Beispielinhalt 3</div>';
+      } else {
+        files.forEach(f=>{
+          const img = document.createElement('img');
+          img.style.width='100%'; img.style.height='120px'; img.style.objectFit='cover'; img.style.borderRadius='8px';
+          img.src = URL.createObjectURL(f);
+          const card = document.createElement('div'); card.className='card';
+          card.appendChild(img);
+          grid.appendChild(card);
+        });
+      }
+    }
+
+    $('previewBtn').addEventListener('click', ()=> updatePreview());
+    // Live update on change
+    ['siteTitle','siteDesc','faviconFile','imageFiles','primaryColor'].forEach(id=>{
+      $(id).addEventListener('change', updatePreview);
+      $(id).addEventListener('input', updatePreview);
+    });
+    updatePreview();
+
+    // Generiere HTML und CSS Strings
+    function buildHTML({title,desc, faviconPath, images}) {
+      const cssLink = 'styles.css';
+      const imagesHtml = images.map(src => `<div class="card"><img src="${src}" alt="" /></div>`).join('\n');
+      return `<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>${escapeHtml(title)}</title>
+  <meta name="description" content="${escapeHtml(desc)}" />
+  ${faviconPath ? `<link rel="icon" href="${faviconPath}">` : ''}
+  <link rel="stylesheet" href="${cssLink}">
+</head>
+<body>
+  <main class="site">
+    <section class="hero">
+      ${faviconPath ? `<img class="logo" src="${faviconPath}" alt="Logo">` : ''}
+      <div>
+        <h1>${escapeHtml(title)}</h1>
+        <p>${escapeHtml(desc)}</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      ${imagesHtml || '<div class="card">Kein Bild hochgeladen</div>'}
+    </section>
+
+    <footer>Erstellt mit dem Mini Website Builder</footer>
+  </main>
+</body>
+</html>`;
+    }
+
+    function buildCSS(primaryColor){
+      return `:root{--accent:${primaryColor || '#7c5cff'}}
+body{font-family:Inter,system-ui,Arial; margin:0; background:linear-gradient(180deg,#f7f9fc,#eef2f7); color:#0b1220}
+.site{max-width:1100px;margin:40px auto;padding:28px}
+.hero{display:flex;gap:18px;align-items:center}
+.logo{width:96px;height:96px;border-radius:12px;object-fit:cover}
+h1{margin:0;font-size:32px;color:var(--accent)}
+p{margin:6px 0 0 0;color:#334155}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
+.card{background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+.card img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+footer{margin-top:20px;color:#64748b}`;
+    }
+
+    // Escape einfache HTML-Inhalte
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });
+    }
+
+    // ZIP erstellen und herunterladen
+    $('generateBtn').addEventListener('click', async ()=>{
+      const title = $('siteTitle').value || 'Meine Seite';
+      const desc = $('siteDesc').value || '';
+      const primaryColor = $('primaryColor').value || '#7c5cff';
+      const faviconFile = $('faviconFile').files[0];
+      const imageFiles = Array.from($('imageFiles').files);
+
+      const zip = new JSZip();
+
+      // assets ordner
+      const assets = zip.folder('assets');
+
+      // favicon
+      let faviconPath = '';
+      if(faviconFile){
+        const favData = await fileToArrayBuffer(faviconFile);
+        assets.file('favicon' + getExt(faviconFile.name), favData);
+        faviconPath = 'assets/' + 'favicon' + getExt(faviconFile.name);
+      }
+
+      // bilder
+      const imagePaths = [];
+      for(let i=0;i<imageFiles.length;i++){
+        const f = imageFiles[i];
+        const buf = await fileToArrayBuffer(f);
+        const name = `image_${i+1}${getExt(f.name)}`;
+        assets.file(name, buf);
+        imagePaths.push('assets/' + name);
+      }
+
+      // styles.css
+      zip.file('styles.css', buildCSS(primaryColor));
+
+      // index.html
+      zip.file('index.html', buildHTML({title,desc,faviconPath,images:imagePaths}));
+
+      // optional: README
+      zip.file('README.txt', `Erstellt mit Mini Website Builder\nDate: ${new Date().toLocaleString()}\n`);
+
+      // Erzeuge Blob und lade herunter
+      const content = await zip.generateAsync({type:"blob"});
+      saveAs(content, `${sanitizeFilename(title || 'website')}.zip`);
+    });
+
+    // Hilfsfunktionen
+    function getExt(name){
+      const m = name.match(/\.[0-9a-z]+$/i);
+      return m ? m[0] : '.bin';
+    }
+    function fileToArrayBuffer(file){
+      return new Promise((res,rej)=>{
+        const r = new FileReader();
+        r.onload = ()=> res(r.result);
+        r.onerror = ()=> rej(r.error);
+        r.readAsArrayBuffer(file);
+      });
+    }
+    function sanitizeFilename(name){
+      return name.replace(/[^a-z0-9_\-\.]/gi,'_').slice(0,120);
+    }
+  </script>
+</body>
+</html>
