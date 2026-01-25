@@ -5,168 +5,83 @@
 <title>Suche</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+
+    /* --- Grundlayout --- */
+
     body {
         margin: 0;
         padding: 0;
-        background: #f5f6fa;
+        background: linear-gradient(135deg, #eef2f7, #dfe6f1);
         font-family: "Inter", sans-serif;
         display: flex;
         justify-content: center;
         align-items: flex-start;
         min-height: 100vh;
-        padding-top: 120px;
+        padding-top: 140px;
         color: #222;
+        animation: fadeIn 1.2s ease forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeIn {
+        to { opacity: 1; }
     }
 
     .container {
         width: min(600px, 90%);
         text-align: center;
+        animation: floatIn 0.8s ease forwards;
+        transform: translateY(20px);
+        opacity: 0;
     }
 
+    @keyframes floatIn {
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* --- Suchleiste --- */
+
     .search-box {
-        background: white;
-        border-radius: 14px;
-        padding: 14px 20px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(14px);
+        border-radius: 18px;
+        padding: 16px 22px;
         display: flex;
         align-items: center;
-        gap: 12px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-        transition: box-shadow .25s ease;
-        border: 1px solid #e5e7eb;
+        gap: 14px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+        transition: box-shadow .25s ease, transform .25s ease;
+        border: 1px solid rgba(255,255,255,0.6);
     }
 
     .search-box:focus-within {
-        box-shadow: 0 12px 32px rgba(0,0,0,0.12);
-        border-color: #cbd5e1;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
     }
 
     input {
         flex: 1;
         border: none;
         outline: none;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         background: transparent;
+        color: #222;
     }
 
     button {
         background: #111;
         color: white;
         border: none;
-        padding: 10px 18px;
-        border-radius: 10px;
+        padding: 10px 20px;
+        border-radius: 12px;
         cursor: pointer;
-        font-size: .9rem;
-        transition: background .2s ease;
+        font-size: .95rem;
+        transition: background .2s ease, transform .2s ease;
     }
 
     button:hover {
         background: #333;
-    }
-
-    .history {
-        margin-top: 20px;
-        text-align: left;
-        opacity: 0;
-        transform: translateY(10px);
-        transition: opacity .3s ease, transform .3s ease;
-    }
-
-    .history.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .history-title {
-        font-size: .9rem;
-        color: #555;
-        margin-bottom: 8px;
-        padding-left: 4px;
-    }
-
-    .history-item {
-        background: white;
-        padding: 10px 14px;
-        border-radius: 10px;
-        margin-bottom: 8px;
-        cursor: pointer;
-        border: 1px solid #e5e7eb;
-        transition: background .2s ease, transform .15s ease;
-    }
-
-    .history-item:hover {
-        background: #f0f0f0;
-        transform: translateX(4px);
-    }
-</style>
-</head>
-<body>
-
-<div class="container">
-    <div class="search-box">
-        <input id="searchInput" type="text" placeholder="Suche starten…">
-        <button id="searchBtn">Suchen</button>
-    </div>
-
-    <div id="history" class="history"></div>
-</div>
-
-<script>
-    const input = document.getElementById("searchInput");
-    const btn = document.getElementById("searchBtn");
-    const historyBox = document.getElementById("history");
-
-    function loadHistory() {
-        const items = JSON.parse(localStorage.getItem("searchHistory") || "[]");
-
-        if (items.length === 0) {
-            historyBox.classList.remove("visible");
-            historyBox.innerHTML = "";
-            return;
-        }
-
-        historyBox.classList.add("visible");
-        historyBox.innerHTML = `
-            <div class="history-title">Letzte Suchanfragen</div>
-            ${items.map(i => `<div class="history-item">${i}</div>`).join("")}
-        `;
-
-        document.querySelectorAll(".history-item").forEach(el => {
-            el.addEventListener("click", () => {
-                input.value = el.textContent;
-            });
-        });
-    }
-
-    function saveToHistory(query) {
-        let items = JSON.parse(localStorage.getItem("searchHistory") || "[]");
-
-        items = items.filter(i => i !== query);
-        items.unshift(query);
-
-        items = items.slice(0, 10);
-
-        localStorage.setItem("searchHistory", JSON.stringify(items));
-        loadHistory();
-    }
-
-    function search() {
-        const q = input.value.trim();
-        if (!q) return;
-
-        saveToHistory(q);
-
-        const url = "https://www.google.com/search?q=" + encodeURIComponent(q);
-        window.open(url, "_blank");
-    }
-
-    btn.addEventListener("click", search);
-
-    input.addEventListener("keydown", e => {
-        if (e.key === "Enter") search();
-    });
-
-    loadHistory();
-</script>
-
-</body>
-</html>
+        transform
