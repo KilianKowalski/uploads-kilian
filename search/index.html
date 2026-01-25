@@ -15,18 +15,9 @@
 }
 
 /* THEMES */
-body[data-theme="cyber"]{
-  --accent:#ff2bdc;
-  --bg1:#120015;
-}
-body[data-theme="matrix"]{
-  --accent:#00ff88;
-  --bg1:#00140a;
-}
-body[data-theme="ice"]{
-  --accent:#7fdcff;
-  --bg1:#020a14;
-}
+body[data-theme="cyber"]{--accent:#ff2bdc;--bg1:#120015;}
+body[data-theme="matrix"]{--accent:#00ff88;--bg1:#00140a;}
+body[data-theme="ice"]{--accent:#7fdcff;--bg1:#020a14;}
 
 *{
   box-sizing:border-box;
@@ -43,46 +34,37 @@ body{
   perspective:1200px;
 }
 
-/* SHADER */
-#gl{
-  position:fixed;
-  inset:0;
-  z-index:0;
-  opacity:.55;
-}
+/* Shader */
+#gl{position:fixed;inset:0;z-index:0;opacity:.55}
 
-/* CURSOR */
+/* Cursor */
 .cursor{
   position:fixed;
-  width:14px;
-  height:14px;
+  width:14px;height:14px;
   border-radius:50%;
   border:2px solid var(--accent);
   box-shadow:0 0 25px var(--accent);
   pointer-events:none;
   transform:translate(-50%,-50%);
   z-index:999;
+  transition:transform .15s ease;
 }
 
-/* THEME SELECTOR */
+/* Theme Selector */
 .themes{
   position:fixed;
-  top:20px;
-  right:20px;
-  display:flex;
-  gap:10px;
+  top:20px;right:20px;
+  display:flex;gap:10px;
   z-index:5;
 }
-
 .theme{
-  width:22px;
-  height:22px;
+  width:22px;height:22px;
   border-radius:50%;
   border:2px solid #ffffff44;
   cursor:pointer;
 }
 
-/* UI */
+/* Layout */
 .scene{
   position:relative;
   z-index:2;
@@ -93,25 +75,27 @@ body{
 }
 
 .panel{
-  width:min(90%,680px);
+  width:min(92%,720px);
   padding:36px;
   background:var(--glass);
   backdrop-filter:blur(30px);
   border-radius:28px;
-  box-shadow:
-    0 40px 120px rgba(0,0,0,.6),
-    0 0 80px color-mix(in srgb,var(--accent),transparent 75%);
+  box-shadow:0 40px 120px rgba(0,0,0,.6);
   transform-style:preserve-3d;
-  transition:transform .15s ease;
+  transition:transform .15s;
 }
 
 h1{
   text-align:center;
   letter-spacing:.45em;
-  margin-bottom:32px;
+  margin-bottom:26px;
   text-shadow:0 0 30px var(--accent);
 }
 
+/* Input */
+.input-wrap{
+  position:relative;
+}
 input{
   width:100%;
   padding:22px;
@@ -119,20 +103,66 @@ input{
   background:transparent;
   border:none;
   outline:none;
-  color:var(--text);
+  color:transparent;
   caret-color:var(--accent);
 }
+.fake-input{
+  position:absolute;
+  inset:0;
+  padding:22px;
+  font-size:1.35rem;
+  pointer-events:none;
+}
+.char{
+  display:inline-block;
+  animation:charFloat .35s ease;
+  text-shadow:0 0 12px var(--accent);
+}
 
-input::placeholder{opacity:.4;}
+@keyframes charFloat{
+  0%{transform:translateY(6px) scale(.9);opacity:0}
+  100%{transform:none;opacity:1}
+}
+
+/* History */
+.history{
+  margin-top:24px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.history-item{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+  animation:slideIn .3s ease;
+  transition:transform .2s, box-shadow .2s, opacity .2s;
+}
+.history-item:hover{
+  transform:translateX(6px);
+  box-shadow:0 0 20px var(--accent);
+}
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:none}
+}
+.clear{
+  margin-top:10px;
+  align-self:flex-end;
+  font-size:.8rem;
+  opacity:.5;
+  cursor:pointer;
+}
 </style>
 </head>
 
-<body data-theme="dark">
+<body>
 
 <canvas id="gl"></canvas>
 <div class="cursor" id="cursor"></div>
 
-<!-- Theme Selector -->
 <div class="themes">
   <div class="theme" style="background:#00ffff" data-t="dark"></div>
   <div class="theme" style="background:#ff2bdc" data-t="cyber"></div>
@@ -143,59 +173,88 @@ input::placeholder{opacity:.4;}
 <div class="scene">
   <form class="panel" id="form">
     <h1>NEOSEARCH</h1>
-    <input id="input" placeholder="SUCHEN…" autofocus>
+
+    <div class="input-wrap">
+      <input id="input" autocomplete="off">
+      <div class="fake-input" id="fake"></div>
+    </div>
+
+    <div class="history" id="history"></div>
+    <div class="clear" id="clear">Verlauf löschen</div>
   </form>
 </div>
 
 <script>
-/* Cursor */
+/* Cursor + Magnet */
 const cursor=document.getElementById("cursor");
+let mx=0,my=0;
 addEventListener("mousemove",e=>{
-  cursor.style.left=e.clientX+"px";
-  cursor.style.top=e.clientY+"px";
+  mx+=(e.clientX-mx)*.2;
+  my+=(e.clientY-my)*.2;
+  cursor.style.left=mx+"px";
+  cursor.style.top=my+"px";
 });
 
-/* 3D Parallax (subtil) */
-const panel=document.querySelector(".panel");
-addEventListener("mousemove",e=>{
-  const x=(e.clientX/innerWidth-.5)*14;
-  const y=(e.clientY/innerHeight-.5)*-14;
-  panel.style.transform=`rotateY(${x}deg) rotateX(${y}deg)`;
-});
-
-/* Typing feel */
-const input=document.getElementById("input");
-input.addEventListener("input",()=>{
-  panel.style.boxShadow=`0 0 120px ${getComputedStyle(document.body).getPropertyValue('--accent')}66`;
-  setTimeout(()=>panel.style.boxShadow="",120);
-});
-
-/* Theme handling */
+/* Theme */
 document.querySelectorAll(".theme").forEach(t=>{
   t.onclick=()=>{
     document.body.dataset.theme=t.dataset.t;
     localStorage.setItem("theme",t.dataset.t);
   };
 });
-const saved=localStorage.getItem("theme");
-if(saved) document.body.dataset.theme=saved;
+const savedTheme=localStorage.getItem("theme");
+if(savedTheme) document.body.dataset.theme=savedTheme;
 
-/* Search */
+/* Typing chars */
+const input=document.getElementById("input");
+const fake=document.getElementById("fake");
+
+input.addEventListener("input",()=>{
+  fake.innerHTML=[...input.value].map(c=>
+    `<span class="char">${c===" "?"&nbsp;":c}</span>`
+  ).join("");
+});
+
+/* History */
+let history=JSON.parse(localStorage.getItem("history")||"[]");
+const historyEl=document.getElementById("history");
+
+function render(){
+  historyEl.innerHTML="";
+  history.forEach((q,i)=>{
+    const d=document.createElement("div");
+    d.className="history-item";
+    d.textContent=q;
+    d.onclick=()=>window.open(
+      "https://www.google.com/search?q="+encodeURIComponent(q),
+      "_blank"
+    );
+    historyEl.appendChild(d);
+  });
+}
+render();
+
 document.getElementById("form").onsubmit=e=>{
   e.preventDefault();
   const q=input.value.trim();
   if(!q)return;
-  location.href="https://www.google.com/search?q="+encodeURIComponent(q);
+  history.unshift(q);
+  history=history.slice(0,10);
+  localStorage.setItem("history",JSON.stringify(history));
+  render();
+  window.open("https://www.google.com/search?q="+encodeURIComponent(q),"_blank");
 };
 
-/* WebGL Shader (smooth noise) */
+document.getElementById("clear").onclick=()=>{
+  history=[];
+  localStorage.removeItem("history");
+  render();
+};
+
+/* Shader reacts to history */
 const canvas=document.getElementById("gl");
 const gl=canvas.getContext("webgl");
-function resize(){
-  canvas.width=innerWidth;
-  canvas.height=innerHeight;
-  gl.viewport(0,0,canvas.width,canvas.height);
-}
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;gl.viewport(0,0,canvas.width,canvas.height);}
 resize();addEventListener("resize",resize);
 
 const vs=gl.createShader(gl.VERTEX_SHADER);
@@ -206,15 +265,12 @@ const fs=gl.createShader(gl.FRAGMENT_SHADER);
 gl.shaderSource(fs,`
 precision highp float;
 uniform float t;
+uniform float h;
 uniform vec2 r;
-float noise(vec2 p){
-  return sin(p.x)*sin(p.y);
-}
 void main(){
   vec2 uv=gl_FragCoord.xy/r;
-  float n=noise(uv*6.0+t*0.2);
-  vec3 col=vec3(0.1,0.6,1.0)*n;
-  gl_FragColor=vec4(col,0.25);
+  float w=sin((uv.x+uv.y)*6.0+t*(0.3+h));
+  gl_FragColor=vec4(0.2,0.7,1.0,0.2*w);
 }`);
 gl.compileShader(fs);
 
@@ -235,12 +291,14 @@ gl.enableVertexAttribArray(loc);
 gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
 
 const ut=gl.getUniformLocation(prog,"t");
+const uh=gl.getUniformLocation(prog,"h");
 const ur=gl.getUniformLocation(prog,"r");
 
 let time=0;
 function loop(){
   time+=0.01;
   gl.uniform1f(ut,time);
+  gl.uniform1f(uh,history.length*0.15);
   gl.uniform2f(ur,canvas.width,canvas.height);
   gl.drawArrays(gl.TRIANGLES,0,6);
   requestAnimationFrame(loop);
