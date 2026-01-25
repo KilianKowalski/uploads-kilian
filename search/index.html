@@ -22,38 +22,38 @@ body[data-theme="ice"]{--accent:#7fdcff;--bg1:#020a14;}
 *{
   box-sizing:border-box;
   font-family:system-ui,sans-serif;
-  cursor:none;
 }
 
 body{
   margin:0;
   height:100vh;
   color:var(--text);
-  background:radial-gradient(circle at top,var(--bg1),var(--bg2));
+  background:
+    radial-gradient(circle at top,var(--bg1),var(--bg2));
   overflow:hidden;
   perspective:1200px;
+  animation:bgPulse 30s ease-in-out infinite;
 }
 
-/* Shader */
+@keyframes bgPulse{
+  0%,100%{filter:saturate(1)}
+  50%{filter:saturate(1.15)}
+}
+
+/* WebGL Shader */
 #gl{
   position:fixed;
   inset:0;
   z-index:0;
-  opacity:.5;
+  opacity:.45;
 }
 
-/* Cursor (NON-magnetic) */
-.cursor{
+/* Particle Layer */
+#particles{
   position:fixed;
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  border:2px solid var(--accent);
-  box-shadow:0 0 22px var(--accent);
+  inset:0;
+  z-index:1;
   pointer-events:none;
-  transform:translate(-50%,-50%);
-  z-index:999;
-  transition:transform .12s ease;
 }
 
 /* Theme Selector */
@@ -66,8 +66,7 @@ body{
   z-index:5;
 }
 .theme{
-  width:22px;
-  height:22px;
+  width:22px;height:22px;
   border-radius:50%;
   border:2px solid #ffffff44;
   cursor:pointer;
@@ -76,14 +75,13 @@ body{
 /* Layout */
 .scene{
   position:relative;
-  z-index:2;
+  z-index:3;
   height:100%;
   display:flex;
   justify-content:center;
   align-items:center;
 }
 
-/* Main Panel */
 .panel{
   width:min(90%,640px);
   padding:36px;
@@ -102,10 +100,7 @@ h1{
 }
 
 /* Input */
-.input-wrap{
-  position:relative;
-}
-
+.input-wrap{position:relative;}
 input{
   width:100%;
   padding:22px;
@@ -131,38 +126,29 @@ input{
   animation:charIn .45s cubic-bezier(.2,.8,.2,1);
   text-shadow:0 0 16px var(--accent);
 }
-
 @keyframes charIn{
   0%{opacity:0;transform:translateY(8px) scale(.9)}
-  60%{opacity:1}
-  100%{transform:none}
+  100%{opacity:1;transform:none}
 }
 
 /* History Panel */
 .history-panel{
   position:fixed;
-  top:0;
-  right:0;
-  width:320px;
-  height:100%;
+  top:0;right:0;
+  width:320px;height:100%;
   padding:24px;
   background:rgba(10,10,20,.55);
   backdrop-filter:blur(28px);
   transform:translateX(100%);
   transition:transform .45s cubic-bezier(.4,0,.2,1);
-  z-index:3;
+  z-index:4;
 }
-
-.history-panel.open{
-  transform:translateX(0);
-}
-
+.history-panel.open{transform:translateX(0)}
 .history-title{
   letter-spacing:.2em;
   margin-bottom:20px;
   opacity:.7;
 }
-
 .history-list{
   display:flex;
   flex-direction:column;
@@ -170,33 +156,21 @@ input{
   max-height:70vh;
   overflow:auto;
 }
-
 .history-item{
   padding:10px 14px;
   border-radius:14px;
   background:rgba(255,255,255,.05);
   display:flex;
   justify-content:space-between;
-  align-items:center;
   animation:fadeIn .3s ease;
 }
-
 @keyframes fadeIn{
   from{opacity:0;transform:translateY(6px)}
   to{opacity:1}
 }
-
-.history-item span{
-  cursor:pointer;
-  opacity:.85;
-}
-
-.del{
-  opacity:.4;
-  cursor:pointer;
-}
+.history-item span{cursor:pointer;opacity:.85}
+.del{opacity:.4;cursor:pointer}
 .del:hover{opacity:1}
-
 .clear{
   margin-top:16px;
   font-size:.8rem;
@@ -204,7 +178,7 @@ input{
   cursor:pointer;
 }
 
-/* Toggle Button */
+/* Toggle */
 .history-toggle{
   position:fixed;
   right:20px;
@@ -223,7 +197,7 @@ input{
 <body>
 
 <canvas id="gl"></canvas>
-<div class="cursor" id="cursor"></div>
+<canvas id="particles"></canvas>
 
 <div class="themes">
   <div class="theme" style="background:#00ffff" data-t="dark"></div>
@@ -235,7 +209,6 @@ input{
 <div class="scene">
   <form class="panel" id="form">
     <h1>NEOSEARCH</h1>
-
     <div class="input-wrap">
       <input id="input" autocomplete="off">
       <div class="fake-input" id="fake"></div>
@@ -243,7 +216,6 @@ input{
   </form>
 </div>
 
-<!-- History -->
 <div class="history-panel" id="historyPanel">
   <div class="history-title">SUCHVERLAUF</div>
   <div class="history-list" id="historyList"></div>
@@ -253,16 +225,6 @@ input{
 <div class="history-toggle" id="toggle">Verlauf</div>
 
 <script>
-/* Cursor (clean follow) */
-const cursor=document.getElementById("cursor");
-let cx=0,cy=0;
-addEventListener("mousemove",e=>{
-  cx+=(e.clientX-cx)*0.25;
-  cy+=(e.clientY-cy)*0.25;
-  cursor.style.left=cx+"px";
-  cursor.style.top=cy+"px";
-});
-
 /* Theme */
 document.querySelectorAll(".theme").forEach(t=>{
   t.onclick=()=>{
@@ -273,41 +235,30 @@ document.querySelectorAll(".theme").forEach(t=>{
 const savedTheme=localStorage.getItem("theme");
 if(savedTheme) document.body.dataset.theme=savedTheme;
 
-/* Typing animation */
+/* Typing */
 const input=document.getElementById("input");
 const fake=document.getElementById("fake");
-
 input.addEventListener("input",()=>{
   fake.innerHTML=[...input.value].map(
-    (c,i)=>`<span class="char" style="animation-delay:${i*15}ms">${c===" "?"&nbsp;":c}</span>`
+    (c,i)=>`<span class="char" style="animation-delay:${i*12}ms">${c===" "?"&nbsp;":c}</span>`
   ).join("");
 });
 
-/* History logic */
+/* History */
 let history=JSON.parse(localStorage.getItem("history")||"[]");
 const list=document.getElementById("historyList");
-
 function render(){
   list.innerHTML="";
   history.forEach((q,i)=>{
     const d=document.createElement("div");
     d.className="history-item";
-
     const t=document.createElement("span");
     t.textContent=q;
-    t.onclick=()=>window.open(
-      "https://www.google.com/search?q="+encodeURIComponent(q),
-      "_blank"
-    );
-
+    t.onclick=()=>window.open("https://www.google.com/search?q="+encodeURIComponent(q),"_blank");
     const del=document.createElement("div");
     del.className="del";
     del.textContent="✕";
-    del.onclick=()=>{
-      history.splice(i,1);
-      save();
-    };
-
+    del.onclick=()=>{history.splice(i,1);save()};
     d.append(t,del);
     list.appendChild(d);
   });
@@ -326,10 +277,7 @@ document.getElementById("form").onsubmit=e=>{
   history.unshift(q);
   history=history.slice(0,10);
   save();
-  window.open(
-    "https://www.google.com/search?q="+encodeURIComponent(q),
-    "_blank"
-  );
+  window.open("https://www.google.com/search?q="+encodeURIComponent(q),"_blank");
 };
 
 /* Clear */
@@ -338,20 +286,45 @@ document.getElementById("clear").onclick=()=>{
   save();
 };
 
-/* Toggle history */
-const panel=document.getElementById("historyPanel");
+/* Toggle History */
+const hp=document.getElementById("historyPanel");
 document.getElementById("toggle").onclick=()=>{
-  panel.classList.toggle("open");
+  hp.classList.toggle("open");
 };
 
-/* Shader (subtle, reacts to history size) */
+/* Particles */
+const pc=document.getElementById("particles");
+const pctx=pc.getContext("2d");
+function presize(){pc.width=innerWidth;pc.height=innerHeight}
+presize();addEventListener("resize",presize);
+
+const parts=[...Array(60)].map(()=>({
+  x:Math.random()*pc.width,
+  y:Math.random()*pc.height,
+  r:Math.random()*2+0.5,
+  vx:(Math.random()-.5)*0.3,
+  vy:(Math.random()-.5)*0.3
+}));
+
+function pLoop(){
+  pctx.clearRect(0,0,pc.width,pc.height);
+  parts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0||p.x>pc.width)p.vx*=-1;
+    if(p.y<0||p.y>pc.height)p.vy*=-1;
+    pctx.beginPath();
+    pctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    pctx.fillStyle="rgba(255,255,255,0.25)";
+    pctx.fill();
+  });
+  requestAnimationFrame(pLoop);
+}
+pLoop();
+
+/* WebGL Shader (subtle) */
 const canvas=document.getElementById("gl");
 const gl=canvas.getContext("webgl");
-function resize(){
-  canvas.width=innerWidth;
-  canvas.height=innerHeight;
-  gl.viewport(0,0,canvas.width,canvas.height);
-}
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;gl.viewport(0,0,canvas.width,canvas.height);}
 resize();addEventListener("resize",resize);
 
 const vs=gl.createShader(gl.VERTEX_SHADER);
@@ -362,12 +335,11 @@ const fs=gl.createShader(gl.FRAGMENT_SHADER);
 gl.shaderSource(fs,`
 precision highp float;
 uniform float t;
-uniform float h;
 uniform vec2 r;
 void main(){
   vec2 uv=gl_FragCoord.xy/r;
-  float w=sin((uv.x+uv.y)*5.0+t*(0.3+h));
-  gl_FragColor=vec4(0.2,0.7,1.0,0.22*w);
+  float w=sin((uv.x+uv.y)*5.0+t*0.4);
+  gl_FragColor=vec4(0.2,0.7,1.0,0.2*w);
 }`);
 gl.compileShader(fs);
 
@@ -388,14 +360,12 @@ gl.enableVertexAttribArray(loc);
 gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
 
 const ut=gl.getUniformLocation(prog,"t");
-const uh=gl.getUniformLocation(prog,"h");
 const ur=gl.getUniformLocation(prog,"r");
 
 let time=0;
 function loop(){
   time+=0.01;
   gl.uniform1f(ut,time);
-  gl.uniform1f(uh,history.length*0.15);
   gl.uniform2f(ur,canvas.width,canvas.height);
   gl.drawArrays(gl.TRIANGLES,0,6);
   requestAnimationFrame(loop);
