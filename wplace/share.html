@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pixel Antifa – Mitmachen</title>
+
+  <meta name="description"
+        content="Pixel Antifa ist ein Community-Projekt gegen Faschismus auf Wplace. Mitmachen, mitpixeln, Haltung zeigen.">
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body>
+
+  <!-- Consent Overlay -->
+  <div id="consentOverlay" class="consent-overlay" role="dialog" aria-modal="true">
+    <div class="consent-modal">
+      <h2>Hinweis vor dem Betreten</h2>
+      <p>
+        Pixel Antifa ist ein antifaschistisches Community-Projekt.
+        Zugriff nur, wenn du dem Folgenden zustimmst:
+      </p>
+      <ul>
+        <li>Kein Platz für Faschismus, Rassismus oder Diskriminierung.</li>
+        <li>Respektvoller Umgang miteinander.</li>
+        <li>Keine Sabotage von Projekten.</li>
+      </ul>
+      <div class="consent-actions">
+        <button id="consentAccept" class="consent-btn consent-accept">Akzeptieren</button>
+        <button id="consentDecline" class="consent-btn consent-decline">Ablehnen</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="container section" style="min-height:100vh; display:flex; align-items:center;">
+    <div class="panel" style="max-width:720px; margin:auto; text-align:center">
+
+      <h1 style="margin-top:0">Pixel Antifa</h1>
+
+      <p class="muted" style="font-size:1.05rem">
+        Pixel Antifa ist ein offenes Community-Projekt auf <b>Wplace</b>.
+        Gemeinsam setzen wir sichtbare Zeichen gegen Faschismus –
+        mit Pixel-Art, Koordination und Solidarität.
+      </p>
+
+      <p class="muted">
+        Jede Person kann mithelfen. Egal ob regelmäßig oder spontan.
+      </p>
+
+      <div class="panel-actions" style="justify-content:center; margin-top:18px">
+        <a class="btn btn-primary"
+           href="https://kilianlol.com/wplace/"
+           target="_blank" rel="noopener">
+          Zur Website
+        </a>
+
+        <a class="btn btn-secondary"
+           href="https://discord.gg/ZcrhB9Rv"
+           target="_blank" rel="noopener">
+          Zum Discord
+        </a>
+      </div>
+
+      <div class="muted small" style="margin-top:18px">
+        Kein Login · Keine Anmeldung · Einfach mitmachen
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Consent (minimal, lokal)
+    (function(){
+      const KEY = "wplace_antifa_consent_v1";
+      const overlay = document.getElementById("consentOverlay");
+      if(localStorage.getItem(KEY)==="accepted"){
+        overlay.style.display="none";
+        return;
+      }
+      document.getElementById("consentAccept").onclick = ()=>{
+        localStorage.setItem(KEY,"accepted");
+        overlay.style.display="none";
+      };
+      document.getElementById("consentDecline").onclick = ()=>{
+        window.location.href="https://afd-verbot.de/";
+      };
+    })();
+  </script>
+
+</body>
+</html>
