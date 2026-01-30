@@ -2,9 +2,8 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>❤️-1 Jahr-❤️</title>
+<title>Lea & Kilian – 1 Jahr ❤️</title>
 
-<!-- FONTS -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
 
 <style>
@@ -69,10 +68,6 @@ h2 {
 }
 
 /* SLIDESHOW */
-#slideshow {
-  pointer-events: none;
-}
-
 .slide {
   position: absolute;
   inset: 0;
@@ -84,7 +79,6 @@ h2 {
   opacity: 1;
 }
 
-/* blurred background */
 .slide .bg {
   position: absolute;
   inset: 0;
@@ -95,7 +89,6 @@ h2 {
   transform: scale(1.15);
 }
 
-/* sharp foreground */
 .slide .fg {
   position: absolute;
   inset: 0;
@@ -116,12 +109,18 @@ h2 {
   font-size: 1.15rem;
   opacity: 0.85;
 }
+
+/* HIDDEN FILE INPUT */
+#folderInput {
+  display: none;
+}
 </style>
 </head>
 
 <body>
 
 <canvas id="particles"></canvas>
+<input type="file" id="folderInput" webkitdirectory multiple accept="image/*">
 
 <!-- START -->
 <div id="start" class="screen active">
@@ -186,14 +185,12 @@ function drawHeart(x, y, size) {
 
 function animateParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   particles.forEach(p => {
     p.y -= p.s;
     if (p.y < -20) {
       p.y = canvas.height + 20;
       p.x = Math.random() * canvas.width;
     }
-
     if (heartMode) {
       ctx.fillStyle = "rgba(255,80,120,0.85)";
       drawHeart(p.x, p.y, p.r);
@@ -204,21 +201,15 @@ function animateParticles() {
       ctx.fill();
     }
   });
-
   requestAnimationFrame(animateParticles);
 }
 animateParticles();
 
 /* ================= SLIDESHOW ================= */
 const SLIDE_DURATION = 5000;
-let images = [];
+let files = [];
 let current = 0;
 let interval;
-
-async function loadImages() {
-  const res = await fetch("images.json");
-  images = await res.json();
-}
 
 function showScreen(id) {
   document.querySelectorAll(".screen")
@@ -231,16 +222,17 @@ function startSlideshow() {
   const container = document.getElementById("slideshow");
   container.innerHTML = "";
 
-  images.forEach(src => {
+  files.forEach(file => {
+    const url = URL.createObjectURL(file);
     const slide = document.createElement("div");
     slide.className = "slide";
 
     const bg = document.createElement("img");
-    bg.src = src;
+    bg.src = url;
     bg.className = "bg";
 
     const fg = document.createElement("img");
-    fg.src = src;
+    fg.src = url;
     fg.className = "fg";
 
     slide.appendChild(bg);
@@ -255,7 +247,6 @@ function startSlideshow() {
   interval = setInterval(() => {
     slides[current].classList.remove("active");
     current++;
-
     if (current >= slides.length) {
       clearInterval(interval);
       setTimeout(() => {
@@ -264,20 +255,31 @@ function startSlideshow() {
       }, 2500);
       return;
     }
-
     slides[current].classList.add("active");
   }, SLIDE_DURATION);
 }
 
-document.addEventListener("keydown", async e => {
-  if (e.code !== "Space") return;
+/* ================= INPUT HANDLING ================= */
+document.getElementById("folderInput").addEventListener("change", e => {
+  files = [...e.target.files]
+    .filter(f => f.type.startsWith("image/"))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  if (document.getElementById("start").classList.contains("active")) {
-    await loadImages();
+  if (files.length > 0) {
     startSlideshow();
-  } else if (document.getElementById("end").classList.contains("active")) {
-    heartMode = false;
-    showScreen("start");
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "+") {
+    document.getElementById("folderInput").click();
+  }
+
+  if (e.code === "Space") {
+    if (document.getElementById("end").classList.contains("active")) {
+      heartMode = false;
+      showScreen("start");
+    }
   }
 });
 </script>
