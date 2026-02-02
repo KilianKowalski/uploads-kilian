@@ -44,26 +44,6 @@ window.WPLACE_DATA = {
   }
 },
 {
-  id: "projekt-005",
-  title: "Faschismus stinkt!",
-  status: "wip",
-  tags: [
-    "faschismus",
-    "spray",
-    "einhorn"
-  ],
-  coordUrl: "https://wplace.live/?lat=48.50944312386456&lng=13.109501621777323&zoom=12.776771121554157",
-  updatedAt: "2026-01-26",
-  coverImg: "assets/img/projekt-005/projekt-005_cover.png",
-  progressImg: "assets/img/projekt-005/projekt-005_progress.png",
-  finalImg: "assets/img/projekt-005/projekt-005_final.png",
-  note: "Klare Botschaft. Muss man nichts zu sagen",
-  wipText: "Ein deutliches Statement gegen Faschismus. Die Idee zu diesem Motiv stammt von den Pixel Punks und ist noch in Arbeit.",
-  poll: {
-    enabled: false
-  }
-},
-{
   id: "projekt-001",
   title: "Anti AfD QR-Code",
   status: "done",
@@ -98,6 +78,27 @@ window.WPLACE_DATA = {
   finalImg: "assets/img/projekt-002/projekt-002_final.png",
   note: "Klassisches Antifa Logo",
   wipText: "An dieser Stelle befand sich bereits ein fertiges Logo der Antifaschistischen Aktion. Meiner Meinung nach war es etwas zu klein, weshalb ich begann, die Konturen eines größeren Logos darüber zu pixeln. Dank der Hilfe von Tabby, Earthflare, Flair Bear, Greedy und vielen anderen konnte dieses Projekt umgesetzt werden. Da ich hauptsächlich politische Kunstwerke starte, ist es völlig normal, mit Leuten zu rechnen, die diese gerne zerstören wollen. Auch hier war das der Fall. Und obwohl ich das Schematic verloren hatte, hielt dieses Werk stand! Danke an alle Pixler:innen!",
+  poll: {
+    enabled: false
+  }
+},
+{
+  id: "projekt-005",
+  title: "Faschismus stinkt!",
+  status: "done",
+  tags: [
+    "faschismus",
+    "spray",
+    "einhorn",
+    "pixelpunks"
+  ],
+  coordUrl: "https://wplace.live/?lat=48.50944312386456&lng=13.109501621777323&zoom=12.776771121554157",
+  updatedAt: "2026-02-02",
+  coverImg: "assets/img/projekt-005/projekt-005_cover.png",
+  progressImg: "assets/img/projekt-005/projekt-005_progress.png",
+  finalImg: "assets/img/projekt-005/projekt-005_final.png",
+  note: "Klare Botschaft! Muss man nichts zu sagen.",
+  wipText: "Ein deutliches Statement gegen Faschismus. Die Idee zu diesem Motiv stammt von den Pixel Punks und wurde gemeinsam mit Combonessex, GreedyShirt und natürlich den Pixel Punks realisiert. Danke an alle Helfer:innen!",
   poll: {
     enabled: false
   }
