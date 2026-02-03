@@ -11,8 +11,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Counter">
-  <!-- Optional: iOS Icon (wenn du eins hast) -->
-  <!-- <link rel="apple-touch-icon" href="icon-192.png"> -->
 
   <style>
     :root { --bg:#0b0f14; --card:#121824; --muted:#7f8aa3; --text:#e7ecf7; --accent:#7c5cff; --danger:#ff4d6d; --ok:#2dd4bf; }
@@ -27,401 +25,114 @@
     .big{font-size:52px;font-weight:800;letter-spacing:-1px;line-height:1}
     .muted{color:var(--muted);font-size:13px}
     button,input{font:inherit}
-    .btn{
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      padding:10px 12px;border-radius:12px;
-      cursor:pointer;transition:.15s transform,.15s background;
-    }
-    .btn:hover{background:rgba(255,255,255,.08)}
-    .btn:active{transform:scale(.98)}
+    .btn{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer}
     .btn.primary{background:rgba(124,92,255,.22);border-color:rgba(124,92,255,.55)}
     .btn.danger{background:rgba(255,77,109,.16);border-color:rgba(255,77,109,.5)}
     .btn.ok{background:rgba(45,212,191,.16);border-color:rgba(45,212,191,.5)}
     .pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);font-size:12px;color:var(--muted)}
-    input[type="number"]{
-      width:140px;max-width:100%;
-      padding:10px 12px;border-radius:12px;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.12);
-      color:var(--text);
-      outline:none;
-    }
+    input[type="number"]{width:140px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.12);color:var(--text)}
     canvas{width:100%;height:160px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
     table{width:100%;border-collapse:collapse}
-    th,td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:13px}
-    th{color:var(--muted);font-weight:600}
+    th,td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px}
+    th{color:var(--muted)}
     .right{text-align:right}
-    .footer{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center}
-    .tiny{font-size:12px;color:var(--muted)}
-    .notice{font-size:12px;color:var(--muted);line-height:1.35}
     .kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .kpi .item{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
     .kpi .label{font-size:12px;color:var(--muted)}
-    .kpi .val{font-size:18px;font-weight:700;margin-top:4px}
+    .kpi .val{font-size:18px;font-weight:700}
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <h1>Vape Tracker</h1>
+<div class="wrap">
+  <h1>Vape Tracker</h1>
 
-    <div class="grid">
-      <div class="card">
-        <div class="row" style="justify-content:space-between;">
-          <div>
-            <div class="muted">Heute</div>
-            <div class="big" id="todayCount">0</div>
-            <div class="row">
-              <span class="pill" id="todayDatePill">—</span>
-              <span class="pill" id="nextResetPill">Reset um —</span>
-              <span class="pill" id="installHint" style="display:none;">Installierbar ✅</span>
-            </div>
-          </div>
+  <div class="grid">
+    <div class="card">
+      <div class="muted">Heute</div>
+      <div class="big" id="todayCount">0</div>
+      <span class="pill" id="todayDatePill"></span>
+    </div>
 
-          <div class="row">
-            <button class="btn primary" id="btnPlus1">+1</button>
-            <button class="btn" id="btnPlus5">+5</button>
-            <button class="btn" id="btnMinus1">-1</button>
-            <button class="btn" id="btnMinus5">-5</button>
-          </div>
-        </div>
+    <div class="card">
+      <div class="muted">Statistiken</div>
 
-        <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:14px 0;">
-
-        <div class="row" style="align-items:flex-end;justify-content:space-between;">
-          <div class="row" style="gap:8px;align-items:flex-end;flex-wrap:wrap;">
-            <div>
-              <div class="muted">Manuell</div>
-              <div class="row">
-                <input type="number" id="manualValue" placeholder="z.B. 10" />
-                <button class="btn ok" id="btnAddManual">Add</button>
-                <button class="btn" id="btnSubManual">Sub</button>
-                <button class="btn" id="btnSetManual">Set</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <button class="btn danger" id="btnResetToday">Heute auf 0</button>
-          </div>
-        </div>
-
-        <div style="margin-top:14px">
-          <div class="muted" style="margin-bottom:8px">Letzte 14 Tage</div>
-          <canvas id="chart" width="900" height="220"></canvas>
-          <div class="notice" style="margin-top:8px">
-            Lokal gespeichert. Funktioniert auch als “App” auf dem Homescreen.
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="muted" style="margin-bottom:10px">Statistiken</div>
-
-        <div class="kpi">
-          <div class="item"><div class="label">Gestern</div><div class="val" id="yesterday">0</div></div>
-          <div class="item"><div class="label">Letzte 7 Tage (Summe)</div><div class="val" id="sum7">0</div></div>
-          <div class="item"><div class="label">Ø pro Tag (letzte 30)</div><div class="val" id="avg30">0</div></div>
-          <div class="item"><div class="label">Max/Tag (letzte 30)</div><div class="val" id="max30">0</div></div>
-          <div class="item"><div class="label">Gesamt</div><div class="val" id="totalAll">0</div></div>
-          <div class="item"><div class="label">Tage getrackt</div><div class="val" id="daysTracked">0</div></div>
-        </div>
-
-        <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:14px 0;">
-
-        <div class="row" style="justify-content:space-between;align-items:center">
-          <div class="muted">Verlauf (letzte 30)</div>
-          <div class="row">
-            <button class="btn" id="btnExport">Export</button>
-            <button class="btn" id="btnImport">Import</button>
-            <button class="btn danger" id="btnClearAll">Alles löschen</button>
-          </div>
-        </div>
-
-        <div style="margin-top:10px;max-height:360px;overflow:auto;border-radius:12px;border:1px solid rgba(255,255,255,.08)">
-          <table>
-            <thead><tr><th>Datum</th><th class="right">Count</th></tr></thead>
-            <tbody id="historyRows"></tbody>
-          </table>
-        </div>
-
-        <div class="footer" style="margin-top:10px">
-          <div class="tiny" id="storageInfo">—</div>
-          <div class="tiny" id="modeInfo">—</div>
-        </div>
+      <div class="kpi">
+        <div class="item"><div class="label">Gestern</div><div class="val" id="yesterday">0</div></div>
+        <div class="item"><div class="label">Letzte 7 Tage (Summe)</div><div class="val" id="sum7">0</div></div>
+        <div class="item"><div class="label">Ø pro Tag (letzte 7)</div><div class="val" id="avg7">0</div></div>
+        <div class="item"><div class="label">Ø pro Tag (letzte 30)</div><div class="val" id="avg30">0</div></div>
+        <div class="item"><div class="label">Max/Tag (letzte 30)</div><div class="val" id="max30">0</div></div>
+        <div class="item"><div class="label">Gesamt</div><div class="val" id="totalAll">0</div></div>
       </div>
     </div>
   </div>
+</div>
 
 <script>
 (() => {
-  // ====== PWA / Install-Hinweis (Chrome/Android zeigt "Install", iOS über Share Menü) ======
-  let deferredPrompt = null;
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    const hint = document.getElementById("installHint");
-    if(hint) hint.style.display = "inline-flex";
-  });
-
-  // ====== App Code (Counter + Stats) ======
   const STORAGE_KEY = "local_counter_tracker_v1";
 
   const els = {
     todayCount: document.getElementById("todayCount"),
     todayDatePill: document.getElementById("todayDatePill"),
-    nextResetPill: document.getElementById("nextResetPill"),
-
-    btnPlus1: document.getElementById("btnPlus1"),
-    btnPlus5: document.getElementById("btnPlus5"),
-    btnMinus1: document.getElementById("btnMinus1"),
-    btnMinus5: document.getElementById("btnMinus5"),
-    btnResetToday: document.getElementById("btnResetToday"),
-
-    manualValue: document.getElementById("manualValue"),
-    btnAddManual: document.getElementById("btnAddManual"),
-    btnSubManual: document.getElementById("btnSubManual"),
-    btnSetManual: document.getElementById("btnSetManual"),
-
     yesterday: document.getElementById("yesterday"),
     sum7: document.getElementById("sum7"),
+    avg7: document.getElementById("avg7"),
     avg30: document.getElementById("avg30"),
     max30: document.getElementById("max30"),
     totalAll: document.getElementById("totalAll"),
-    daysTracked: document.getElementById("daysTracked"),
-
-    historyRows: document.getElementById("historyRows"),
-    chart: document.getElementById("chart"),
-
-    btnExport: document.getElementById("btnExport"),
-    btnImport: document.getElementById("btnImport"),
-    btnClearAll: document.getElementById("btnClearAll"),
-    storageInfo: document.getElementById("storageInfo"),
-    modeInfo: document.getElementById("modeInfo"),
   };
 
-  function pad(n){ return String(n).padStart(2,"0"); }
-  function toISODate(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-  function addDays(date, days){ const d = new Date(date); d.setDate(d.getDate()+days); return d; }
-  function parseISODate(s){ const [y,m,dd] = s.split("-").map(Number); return new Date(y, m-1, dd); }
+  const pad = n => String(n).padStart(2,"0");
+  const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const addDays = (d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 
-  function loadData(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return { history: {}, lastSeenDate: null };
-      const obj = JSON.parse(raw);
-      if(!obj || typeof obj !== "object") throw new Error("bad");
-      if(!obj.history || typeof obj.history !== "object") obj.history = {};
-      return { history: obj.history, lastSeenDate: obj.lastSeenDate || null };
-    }catch{
-      return { history: {}, lastSeenDate: null };
-    }
-  }
-  function saveData(data){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-  function ensureToday(data){
-    const today = toISODate(new Date());
-    if(!(today in data.history)) data.history[today] = 0;
-    data.lastSeenDate = today;
-    saveData(data);
-    return today;
-  }
-  function getCount(data, iso){ return Number(data.history[iso] ?? 0) || 0; }
-  function setCount(data, iso, value){
-    data.history[iso] = Math.max(0, Math.floor(Number(value) || 0));
-    saveData(data);
-  }
-  function incCount(data, iso, delta){ setCount(data, iso, getCount(data, iso) + delta); }
-  function getTodayISO(){ return toISODate(new Date()); }
-
-  function formatDatePill(iso){
-    const d = parseISODate(iso);
-    return d.toLocaleDateString("de-DE", { weekday:"short", year:"numeric", month:"short", day:"2-digit" });
-  }
-  function nextMidnight(){
-    const now = new Date();
-    const m = new Date(now);
-    m.setHours(24,0,0,0);
-    return m;
+  function load(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {history:{}} }
+    catch{ return {history:{}} }
   }
 
-  function computeStats(data){
-    const keys = Object.keys(data.history).sort();
-    const totalAll = keys.reduce((s,k)=> s + getCount(data,k), 0);
-    const daysTracked = keys.length;
+  function get(d,k){ return Number(d.history[k]||0) }
 
-    const yesterdayISO = toISODate(addDays(new Date(), -1));
-    const yesterday = getCount(data, yesterdayISO);
-
-    function sumLastNDays(n){
-      let sum = 0;
-      for(let i=0;i<n;i++){
-        const iso = toISODate(addDays(new Date(), -i));
-        sum += getCount(data, iso);
-      }
-      return sum;
-    }
-
-    let sum30=0, max30=0;
+  function stats(d){
+    let sum7=0,sum30=0,max30=0,total=0;
     for(let i=0;i<30;i++){
-      const iso = toISODate(addDays(new Date(), -i));
-      const c = getCount(data, iso);
-      sum30 += c;
-      max30 = Math.max(max30, c);
+      const c=get(d,iso(addDays(new Date(),-i)));
+      total+=c;
+      sum30+=c;
+      max30=Math.max(max30,c);
+      if(i<7) sum7+=c;
     }
-    const avg30 = sum30 / 30;
-
-    return { yesterday, sum7: sumLastNDays(7), avg30, max30, totalAll, daysTracked };
-  }
-
-  function drawChart(data){
-    const ctx = els.chart.getContext("2d");
-    const W = els.chart.width, H = els.chart.height;
-    ctx.clearRect(0,0,W,H);
-
-    const n = 14;
-    const vals = [];
-    for(let i=n-1;i>=0;i--){
-      const iso = toISODate(addDays(new Date(), -i));
-      vals.push(getCount(data, iso));
-    }
-    const maxV = Math.max(1, ...vals);
-
-    const pL = 24, pR = 10, pT = 12, pB = 26;
-    const innerW = W - pL - pR;
-    const innerH = H - pT - pB;
-
-    ctx.globalAlpha = 0.35;
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1;
-    for(let i=0;i<=4;i++){
-      const y = pT + (innerH * i / 4);
-      ctx.beginPath(); ctx.moveTo(pL, y); ctx.lineTo(W - pR, y); ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-
-    const gap = 6;
-    const barW = (innerW - gap*(n-1)) / n;
-
-    for(let i=0;i<n;i++){
-      const v = vals[i];
-      const h = (v / maxV) * innerH;
-      const x = pL + i*(barW+gap);
-      const y = pT + (innerH - h);
-
-      ctx.fillStyle = "rgba(124,92,255,0.55)";
-      ctx.fillRect(x, y, barW, h);
-
-      if(i % 3 === 0 || i === n-1){
-        ctx.fillStyle = "rgba(231,236,247,0.75)";
-        ctx.font = "12px system-ui";
-        const d = addDays(new Date(), -(n-1-i));
-        const label = `${pad(d.getDate())}.${pad(d.getMonth()+1)}`;
-        ctx.fillText(label, x, H - 10);
-      }
-    }
-
-    ctx.fillStyle = "rgba(231,236,247,0.85)";
-    ctx.font = "12px system-ui";
-    ctx.fillText(`max: ${maxV}`, 10, 16);
-  }
-
-  function renderAll(){
-    const data = loadData();
-    const todayISO = ensureToday(data);
-
-    els.todayCount.textContent = getCount(data, todayISO);
-    els.todayDatePill.textContent = formatDatePill(todayISO);
-
-    const nm = nextMidnight();
-    els.nextResetPill.textContent = `Reset um ${pad(nm.getHours())}:${pad(nm.getMinutes())}`;
-
-    const st = computeStats(data);
-    els.yesterday.textContent = st.yesterday;
-    els.sum7.textContent = st.sum7;
-    els.avg30.textContent = (Math.round(st.avg30 * 10) / 10);
-    els.max30.textContent = st.max30;
-    els.totalAll.textContent = st.totalAll;
-    els.daysTracked.textContent = st.daysTracked;
-
-    const rows = [];
-    for(let i=0;i<30;i++){
-      const iso = toISODate(addDays(new Date(), -i));
-      rows.push({ iso, c: getCount(data, iso) });
-    }
-    els.historyRows.innerHTML = rows.map(r => `
-      <tr><td>${r.iso}</td><td class="right">${r.c}</td></tr>
-    `).join("");
-
-    const bytes = new Blob([localStorage.getItem(STORAGE_KEY) || ""]).size;
-    els.storageInfo.textContent = `Speicher: ~${bytes} Bytes`;
-
-    els.modeInfo.textContent = (window.matchMedia('(display-mode: standalone)').matches)
-      ? "Modus: App (Homescreen)"
-      : "Modus: Browser";
-
-    drawChart(data);
-  }
-
-  // Buttons
-  els.btnPlus1.addEventListener("click", () => { const d=loadData(); ensureToday(d); incCount(d, getTodayISO(), 1); renderAll(); });
-  els.btnPlus5.addEventListener("click", () => { const d=loadData(); ensureToday(d); incCount(d, getTodayISO(), 5); renderAll(); });
-  els.btnMinus1.addEventListener("click", () => { const d=loadData(); ensureToday(d); incCount(d, getTodayISO(), -1); renderAll(); });
-  els.btnMinus5.addEventListener("click", () => { const d=loadData(); ensureToday(d); incCount(d, getTodayISO(), -5); renderAll(); });
-  els.btnResetToday.addEventListener("click", () => { const d=loadData(); ensureToday(d); setCount(d, getTodayISO(), 0); renderAll(); });
-
-  function manualNumber(){
-    const v = Number(els.manualValue.value);
-    if(!Number.isFinite(v)) return 0;
-    return Math.floor(v);
-  }
-  els.btnAddManual.addEventListener("click", () => { const d=loadData(); ensureToday(d); incCount(d, getTodayISO(), manualNumber()); renderAll(); });
-  els.btnSubManual.addEventListener("click", () => { const d=loadData(); ensureToday(d); incCount(d, getTodayISO(), -manualNumber()); renderAll(); });
-  els.btnSetManual.addEventListener("click", () => { const d=loadData(); ensureToday(d); setCount(d, getTodayISO(), manualNumber()); renderAll(); });
-
-  // Export/Import
-  els.btnExport.addEventListener("click", () => {
-    const d = loadData();
-    const blob = new Blob([JSON.stringify(d, null, 2)], {type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "tracker_export.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  });
-
-  els.btnImport.addEventListener("click", async () => {
-    const inp = document.createElement("input");
-    inp.type = "file";
-    inp.accept = "application/json";
-    inp.onchange = async () => {
-      const file = inp.files?.[0];
-      if(!file) return;
-      try{
-        const text = await file.text();
-        const obj = JSON.parse(text);
-        if(!obj || typeof obj !== "object" || typeof obj.history !== "object") throw new Error("Format falsch");
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ history: obj.history, lastSeenDate: obj.lastSeenDate || null }));
-        renderAll();
-      }catch(e){
-        alert("Import fehlgeschlagen: " + (e?.message || "unbekannt"));
-      }
+    return {
+      yesterday:get(d,iso(addDays(new Date(),-1))),
+      sum7,
+      avg7:sum7/7,
+      avg30:sum30/30,
+      max30,
+      total
     };
-    inp.click();
-  });
+  }
 
-  els.btnClearAll.addEventListener("click", () => {
-    if(!confirm("Wirklich ALLES lokal löschen?")) return;
-    localStorage.removeItem(STORAGE_KEY);
-    renderAll();
-  });
+  function render(){
+    const d=load();
+    const today=iso(new Date());
+    d.history[today]??=0;
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(d));
 
-  // Update regelmäßig (u.a. wegen Tageswechsel)
-  setInterval(renderAll, 30 * 1000);
+    els.todayCount.textContent=d.history[today];
+    els.todayDatePill.textContent=new Date().toLocaleDateString("de-DE");
 
-  // init
-  renderAll();
+    const s=stats(d);
+    els.yesterday.textContent=s.yesterday;
+    els.sum7.textContent=s.sum7;
+    els.avg7.textContent=s.avg7.toFixed(1);
+    els.avg30.textContent=s.avg30.toFixed(1);
+    els.max30.textContent=s.max30;
+    els.totalAll.textContent=s.total;
+  }
+
+  render();
 })();
 </script>
 </body>
