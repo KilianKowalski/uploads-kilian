@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Startseite</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e1e2f, #2b2b45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #ffffff;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 420px;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        p {
+            opacity: 0.85;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .hint {
+            margin-top: 25px;
+            font-size: 13px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Nicht-Schließungs-Modus aktiviert</h1>
+        <p>
+            Diese Seite ist geöffnet, um nicht von anderen Schülern genervt zu werden, indem sie Chrome schließen.<br>
+            Bitte nicht schließen.
+        </p>
+
+        <div class="hint">
+            Schließen ist geschützt.
+        </div>
+    </div>
+
+    <script>
+        // Chrome-/Browser-Warnung beim Schließen
+        window.addEventListener("beforeunload", function (event) {
+            event.preventDefault();
+            event.returnValue = "";
+        });
+    </script>
+
+</body>
+</html>
