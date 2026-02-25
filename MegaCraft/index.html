@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MegaCraft Server</title>
+    <title>MegaCraft</title>
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     
-    <!-- Minecraft-ähnliche Schriftart (am populärsten & kostenlos über Google Fonts) -->
+    <!-- Minecraft Schrift -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
-    <!-- Alternative sehr nah an Minecraft (Minecraftia-Font): -->
-    <!-- <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet"> -->
+    <!-- Normale Schrift -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Press Start 2P', cursive;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, #0f2b47, #1a4a6e);
             color: #e0f7ff;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
             overflow-x: hidden;
         }
 
@@ -56,21 +56,54 @@
         }
 
         h1 {
+            font-family: 'Press Start 2P', cursive;
             font-size: 2.8em;
-            margin-bottom: 25px;
             color: #39BBC4;
             text-shadow: 4px 4px 0 #0d1f33, 6px 6px 0 #000;
             letter-spacing: 2px;
-            animation: fadeIn 1.2s ease-out;
+            margin-bottom: 20px;
         }
 
-        p {
-            font-size: 1.1em;
+        .subtitle {
+            font-size: 1.3em;
             max-width: 780px;
-            line-height: 1.7;
+            line-height: 1.6;
             color: #d0f0ff;
-            text-shadow: 2px 2px 3px #000;
-            animation: fadeIn 1.8s ease-out;
+            margin-bottom: 40px;
+        }
+
+        .timer-container {
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid #39BBC4;
+            border-radius: 12px;
+            padding: 25px 40px;
+            max-width: 520px;
+            box-shadow: 0 0 25px rgba(57, 187, 196, 0.35);
+            margin: 20px 0 50px;
+        }
+
+        .timer-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.4em;
+            color: #4acdd9;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        #timer {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.2em;
+            color: #ffffff;
+            letter-spacing: 3px;
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        .timer-hint {
+            font-size: 0.95em;
+            color: #a0d0e0;
+            margin-top: 18px;
+            font-style: italic;
+            opacity: 0.85;
         }
 
         footer {
@@ -80,27 +113,18 @@
             gap: 12px;
             padding: 25px;
             background: rgba(0, 0, 0, 0.6);
-            font-size: 0.9em;
+            font-size: 0.95em;
             color: #a0d0e0;
         }
 
-        footer a button {
-            padding: 12px 28px;
-            font-size: 1em;
-            font-family: 'Press Start 2P', cursive;
-            background: #39BBC4;
-            color: #0d1f33;
-            border: 3px solid #2a9aa6;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 0 #2a9aa6;
+        footer a {
+            color: #39BBC4;
+            text-decoration: none;
+            font-weight: 500;
         }
 
-        footer a button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 #1f7a80;
-            background: #4acdd9;
+        footer a:hover {
+            text-decoration: underline;
         }
 
         .copyright {
@@ -108,14 +132,11 @@
             opacity: 0.9;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         @media (max-width: 768px) {
             h1 { font-size: 2.1em; }
-            p { font-size: 0.95em; }
+            .subtitle { font-size: 1.1em; }
+            .timer-container { padding: 20px 25px; }
+            #timer { font-size: 1.8em; }
             header img { max-width: 240px; }
         }
     </style>
@@ -127,11 +148,17 @@
 
     <main>
         <h1>Willkommen auf MegaCraft!</h1>
-        <p>Der Server ist derzeit noch in der Entwicklung.<br>Es kommen bald richtig starke Games & Features – bleib gespannt!</p>
+        <p class="subtitle">Der Server ist noch in Arbeit.<br>Es kommen bald epische Games & Features – irgendwann.</p>
+
+        <div class="timer-container">
+            <div class="timer-title">NÄCHSTER GROßER RESET</div>
+            <div id="timer">Berechne...</div>
+            <div class="timer-hint">Achtung: Das ist kein echter Release-Timer.<br>Wir bauen einfach nur Spannung auf. Ganz trocken. Viel Spaß beim Warten. 😐</div>
+        </div>
     </main>
 
     <footer>
-        <a href="impressum.html"><button>Impressum</button></a>
+        <a href="impressum.html">Impressum</a>
         <div class="copyright">
             © <span id="year"></span> MegaCraft – Alle Rechte vorbehalten.
         </div>
@@ -139,6 +166,32 @@
 
     <script>
         document.getElementById("year").textContent = new Date().getFullYear();
+
+        function updateWeeklyTimer() {
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+
+            let nextMonday = new Date(now);
+            nextMonday.setDate(now.getDate() + ((1 - dayOfWeek + 7) % 7));
+            nextMonday.setHours(0, 0, 0, 0);
+
+            if (dayOfWeek === 1 && now > nextMonday) {
+                nextMonday.setDate(nextMonday.getDate() + 7);
+            }
+
+            let diff = nextMonday - now;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById("timer").textContent = 
+                `${days} Tage ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        updateWeeklyTimer();
+        setInterval(updateWeeklyTimer, 1000);
     </script>
 </body>
 </html>
