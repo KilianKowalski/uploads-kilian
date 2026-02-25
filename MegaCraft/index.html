@@ -6,10 +6,10 @@
     <title>MegaCraft</title>
     <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
     
-    <!-- Minecraft Schrift -->
+    <!-- Minecraft Schrift für Buttons, Footer, Timer usw. -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
-    <!-- Normale Schrift -->
+    <!-- Normale Schrift nur für den Fließtext -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
@@ -110,26 +110,38 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
-            padding: 25px;
+            gap: 14px;
+            padding: 30px 20px;
             background: rgba(0, 0, 0, 0.6);
-            font-size: 0.95em;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9em;
             color: #a0d0e0;
+            text-shadow: 1px 1px 2px #000;
         }
 
-        footer a {
-            color: #39BBC4;
-            text-decoration: none;
-            font-weight: 500;
+        footer a button {
+            padding: 14px 32px;
+            font-size: 1em;
+            font-family: 'Press Start 2P', cursive;
+            background: #39BBC4;
+            color: #0d1f33;
+            border: 4px solid #2a9aa6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 0 #2a9aa6;
+            text-shadow: 1px 1px 0 #fff8;
         }
 
-        footer a:hover {
-            text-decoration: underline;
+        footer a button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #1f7a80;
+            background: #4acdd9;
         }
 
         .copyright {
-            margin-top: 8px;
             opacity: 0.9;
+            margin-top: 6px;
         }
 
         @media (max-width: 768px) {
@@ -138,6 +150,8 @@
             .timer-container { padding: 20px 25px; }
             #timer { font-size: 1.8em; }
             header img { max-width: 240px; }
+            footer { font-size: 0.8em; padding: 25px 15px; }
+            footer a button { padding: 12px 24px; font-size: 0.9em; }
         }
     </style>
 </head>
@@ -158,7 +172,7 @@
     </main>
 
     <footer>
-        <a href="impressum.html">Impressum</a>
+        <a href="impressum.html"><button>Impressum</button></a>
         <div class="copyright">
             © <span id="year"></span> MegaCraft – Alle Rechte vorbehalten.
         </div>
@@ -170,23 +184,18 @@
         function updateWeeklyTimer() {
             const now = new Date();
             const dayOfWeek = now.getDay();
-
             let nextMonday = new Date(now);
             nextMonday.setDate(now.getDate() + ((1 - dayOfWeek + 7) % 7));
             nextMonday.setHours(0, 0, 0, 0);
-
             if (dayOfWeek === 1 && now > nextMonday) {
                 nextMonday.setDate(nextMonday.getDate() + 7);
             }
-
             let diff = nextMonday - now;
-
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            document.getElementById("timer").textContent = 
+            document.getElementById("timer").textContent =
                 `${days} Tage ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
