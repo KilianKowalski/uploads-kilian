@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>LernApp Dashboard</title>
+<style>
+body { font-family: sans-serif; padding:20px; }
+input, textarea { width:100%; padding:10px; margin-bottom:10px; }
+textarea { height:150px; }
+</style>
+</head>
+<body>
+
+<h2>Neues Fach erstellen</h2>
+
+<input id="subjectName" placeholder="Fachname">
+<input type="color" id="subjectColor">
+<button onclick="generateSubject()">Fach generieren</button>
+
+<h2>Neue Lernkarte</h2>
+
+<input id="subject" placeholder="Fach (klein, ohne Leerzeichen)">
+<input id="topic" placeholder="Thema (klein, ohne Leerzeichen)">
+<input id="title" placeholder="Titel">
+<textarea id="text" placeholder="Inhalt"></textarea>
+
+<button onclick="generateCard()">Karte generieren</button>
+
+<h3>Code zum Kopieren:</h3>
+<textarea id="output"></textarea>
+
+<script>
+function generateSubject(){
+  let json = `
+{
+  "name": "${subjectName.value}",
+  "color": "${subjectColor.value}",
+  "topics": []
+}
+`;
+  output.value = json;
+}
+
+function generateCard(){
+  let subject = subject.value.toLowerCase().replaceAll(" ","");
+  let topic = topic.value.toLowerCase().replaceAll(" ","");
+
+  let imageName = subject+"_"+topic+"_01.jpg";
+  let audioName = subject+"_"+topic+"_01.mp3";
+
+  let json = `
+{
+  "title": "${title.value}",
+  "text": "${text.value}",
+  "image": "${imageName}",
+  "audio": "${audioName}"
+}
+`;
+  output.value = json;
+}
+</script>
+
+</body>
+</html>
