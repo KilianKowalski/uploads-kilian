@@ -13,18 +13,52 @@
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #121212;
+            background: radial-gradient(circle at center, #1a1a1a, #0d0d0d);
             color: #e0e0e0;
             text-align: center;
+            overflow: hidden;
+            animation: fadeIn 1.5s ease-in-out;
         }
+
         h1 {
             font-size: 3rem;
             margin: 0.5rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+            animation: glow 3s ease-in-out infinite alternate;
         }
+
         p {
             font-size: 1.5rem;
             margin: 0.5rem;
             color: #bbbbbb;
+            opacity: 0;
+            animation: fadeUp 2s ease forwards;
+            animation-delay: 0.8s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px rgba(255,255,255,0.15);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(255,255,255,0.4);
+            }
         }
     </style>
 </head>
