@@ -1,69 +1,124 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kilian Uploads</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a, #0d0d0d);
-            color: #e0e0e0;
-            text-align: center;
-            overflow: hidden;
-            animation: fadeIn 1.5s ease-in-out;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kilian Uploads</title>
 
-        h1 {
-            font-size: 3rem;
-            margin: 0.5rem;
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
-            animation: glow 3s ease-in-out infinite alternate;
-        }
+<style>
+html {
+    background: #000;
+}
 
-        p {
-            font-size: 1.5rem;
-            margin: 0.5rem;
-            color: #bbbbbb;
-            opacity: 0;
-            animation: fadeUp 2s ease forwards;
-            animation-delay: 0.8s;
-        }
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+    background: radial-gradient(circle at 50% 40%, #1c1c1c 0%, #0a0a0a 70%);
+    color: #f0f0f0;
 
-        @keyframes fadeUp {
-            from { 
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    border-radius: 55px;
+    overflow: hidden;
 
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 5px rgba(255,255,255,0.15);
-            }
-            to {
-                text-shadow: 0 0 20px rgba(255,255,255,0.4);
-            }
-        }
-    </style>
+    animation: backgroundDrift 20s ease-in-out infinite alternate;
+}
+
+@keyframes backgroundDrift {
+    0% { background-position: 50% 40%; }
+    100% { background-position: 55% 45%; }
+}
+
+.container {
+    text-align: center;
+    z-index: 2;
+    animation: ultraReveal 4.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes ultraReveal {
+    0% {
+        opacity: 0;
+        filter: blur(50px);
+        transform: scale(1.2);
+    }
+    50% {
+        filter: blur(15px);
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: scale(1);
+    }
+}
+
+h1 {
+    font-size: 3rem;
+    margin: 0.5rem;
+    text-shadow: 0 0 15px rgba(255,255,255,0.15);
+    animation: glowFlow 6s ease-in-out infinite alternate;
+}
+
+p {
+    font-size: 1.5rem;
+    margin: 0.5rem;
+    color: #cccccc;
+}
+
+@keyframes glowFlow {
+    from { text-shadow: 0 0 8px rgba(255,255,255,0.1); }
+    to { text-shadow: 0 0 30px rgba(255,255,255,0.35); }
+}
+
+.particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.15) 70%);
+    border-radius: 50%;
+    filter: blur(2px);
+    animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.4; }
+    100% {
+        transform: translateY(-20vh) translateX(10px);
+        opacity: 0;
+    }
+}
+</style>
 </head>
+
 <body>
+
+<div class="particles">
+    <div class="particle" style="left:10%; animation-duration:28s;"></div>
+    <div class="particle" style="left:25%; animation-duration:32s;"></div>
+    <div class="particle" style="left:40%; animation-duration:30s;"></div>
+    <div class="particle" style="left:55%; animation-duration:36s;"></div>
+    <div class="particle" style="left:70%; animation-duration:26s;"></div>
+    <div class="particle" style="left:85%; animation-duration:34s;"></div>
+</div>
+
+<div class="container">
     <h1>Hier ist nichts</h1>
     <p>Wählt nicht Rechts</p>
+</div>
+
 </body>
 </html>
