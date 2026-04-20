@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Jumper</title>
+    <style>
+        body { margin: 0; background: #f0f0f0; display: flex; flex-direction: column; align-items: center; font-family: sans-serif; }
+        canvas { background: #fff; border: 3px solid #333; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        h2 { margin-bottom: 0; color: #333; }
+    </style>
+</head>
+<body>
+    <h2>Simple Jumper</h2>
+    <p>Benutze die <b>Pfeiltasten (Links/Rechts)</b> zum Steuern!</p>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let player = {
+            x: 200, y: 550, size: 20,
+            vy: 0, vx: 0, 
+            jumpStrength: -10, gravity: 0.4
+        };
+
+        let platforms = [];
+        let score = 0;
+        let keys = {};
+
+        // Plattformen initialisieren
+        for (let i = 0; i < 7; i++) {
+            platforms.push({
+                x: Math.random() * (canvas.width - 60),
+                y: i * 100,
+                w: 60, h: 10
+            });
+        }
+
+        window.addEventListener("keydown", e => keys[e.code] = true);
+        window.addEventListener("keyup", e => keys[e.code] = false);
+
+        function update() {
+            // Bewegung
+            if (keys["ArrowLeft"]) player.vx = -5;
+            else if (keys["ArrowRight"]) player.vx = 5;
+            else player.vx = 0;
+
+            player.x += player.vx;
+            player.vy += player.gravity;
+            player.y += player.vy;
+
+            // Bildschirm-Rand (Loop)
+            if (player.x < 0) player.x = canvas.width;
+            if (player.x > canvas.width) player.x = 0;
+
+            // Kollision mit Plattformen (nur beim Fallen)
+            if (player.vy > 0) {
+                platforms.forEach(p => {
+                    if (player.x < p.x + p.w && player.x + player.size > p.x &&
+                        player.y + player.size > p.y && player.y + player.size < p.y + p.h + 10) {
+                        player.vy = player.jumpStrength;
+                        score++;
+                    }
+                });
+            }
+
+            // Kamera-Effekt: Wenn Spieler hoch steigt, fallen Plattformen
+            if (player.y < 300) {
+                let diff = 300 - player.y;
+                player.y = 300;
+                platforms.forEach(p => {
+                    p.y += diff;
+                    if (p.y > canvas.height) {
+                        p.y = 0;
+                        p.x = Math.random() * (canvas.width - 60);
+                    }
+                });
+            }
+
+            // Game Over
+            if (player.y > canvas.height) {
+                alert("Abgestürzt! Dein Score: " + score);
+                location.reload();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Spieler (Grün)
+            ctx.fillStyle = "#2ECC71";
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+
+            // Plattformen (Grau)
+            ctx.fillStyle = "#7F8C8D";
+            platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
+
+            // Score
+            ctx.fillStyle = "#000";
+            ctx.font = "20px Arial";
+            ctx.fillText("Score: " + score, 20, 30);
+
+            update();
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
