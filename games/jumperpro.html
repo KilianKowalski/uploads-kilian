@@ -6,30 +6,29 @@
     <style>
         body { margin: 0; background: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         #game-container { position: relative; }
-        canvas { background: #fff; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); display: block; }
+        canvas { background: #eef2f3; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); display: block; }
         
-        /* Eigenes Pop-up Design */
         #overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); color: white; display: none;
+            background: rgba(0,0,0,0.85); color: white; display: none;
             flex-direction: column; justify-content: center; align-items: center;
             border-radius: 8px; text-align: center;
         }
         button {
-            padding: 10px 20px; font-size: 18px; cursor: pointer;
+            padding: 12px 25px; font-size: 18px; cursor: pointer;
             background: #2ECC71; border: none; color: white; border-radius: 5px; margin-top: 15px;
+            transition: transform 0.2s;
         }
-        button:hover { background: #27ae60; }
+        button:hover { transform: scale(1.1); background: #27ae60; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
     <canvas id="gameCanvas" width="400" height="600"></canvas>
-    <!-- Das eigene Pop-up -->
     <div id="overlay">
-        <h1 id="msg">GAME OVER</h1>
-        <p>Dein Score: <span id="finalScore">0</span></p>
+        <h1>GAME OVER</h1>
+        <p>Score: <span id="finalScore">0</span></p>
         <button onclick="resetGame()">Nochmal spielen</button>
     </div>
 </div>
@@ -40,30 +39,35 @@
     const overlay = document.getElementById("overlay");
     const finalScoreMsg = document.getElementById("finalScore");
 
-    let player, platforms, score, gameOver, keys = {};
+    let player, platforms, stars, score, gameOver, keys = {};
 
     function init() {
         score = 0;
         gameOver = false;
         overlay.style.display = "none";
         
-        // Spieler startet sicher in der Mitte
         player = {
             x: 190, y: 400, size: 25,
             vy: 0, vx: 0,
-            jumpStrength: -12, gravity: 0.5
+            jumpStrength: -11, gravity: 0.45
         };
 
-        // Erste Plattform direkt unter dem Spieler garantieren
         platforms = [{ x: 150, y: 500, w: 100, h: 15 }];
+        stars = []; // Extra Jumps
         
-        // Restliche Plattformen zufällig verteilen
-        for (let i = 0; i < 6; i++) {
-            platforms.push({
-                x: Math.random() * (canvas.width - 70),
-                y: i * 90,
-                w: 70, h: 15
-            });
+        for (let i = 0; i < 7; i++) {
+            spawnPlatform(i * 85);
+        }
+    }
+
+    function spawnPlatform(yPos) {
+        let w = 70;
+        let x = Math.random() * (canvas.width - w);
+        platforms.push({ x, y: yPos, w, h: 15 });
+
+        // Chance auf einen Stern (Extra Jump) auf dieser Plattform
+        if (Math.random() > 0.8) {
+            stars.push({ x: x + w/2 - 10, y: yPos - 30, size: 20, active: true });
         }
     }
 
@@ -78,19 +82,19 @@
     function update() {
         if (gameOver) return;
 
-        if (keys["ArrowLeft"]) player.vx = -6;
-        else if (keys["ArrowRight"]) player.vx = 6;
+        // Steuerung mit Pfeiltasten ODER A/D
+        if (keys["ArrowLeft"] || keys["KeyA"]) player.vx = -6;
+        else if (keys["ArrowRight"] || keys["KeyD"]) player.vx = 6;
         else player.vx = 0;
 
         player.x += player.vx;
         player.vy += player.gravity;
         player.y += player.vy;
 
-        // Rand-Teleport
         if (player.x < -20) player.x = canvas.width;
         if (player.x > canvas.width) player.x = -20;
 
-        // Kollision beim Fallen
+        // Normale Plattform-Kollision
         if (player.vy > 0) {
             platforms.forEach(p => {
                 if (player.x < p.x + p.w && player.x + player.size > p.x &&
@@ -100,21 +104,36 @@
             });
         }
 
-        // Kamera-Scroll und Punkte
+        // Stern-Kollision (Super Jump)
+        stars.forEach(s => {
+            if (s.active && player.x < s.x + s.size && player.x + player.size > s.x &&
+                player.y < s.y + s.size && player.y + player.size > s.y) {
+                s.active = false;
+                player.vy = -20; // Extra starker Sprung!
+                score += 5;
+            }
+        });
+
+        // Kamera-Scroll
         if (player.y < 250) {
             let diff = 250 - player.y;
             player.y = 250;
-            platforms.forEach(p => {
+            
+            platforms.forEach((p, i) => {
                 p.y += diff;
                 if (p.y > canvas.height) {
-                    p.y = 0;
-                    p.x = Math.random() * (canvas.width - 70);
-                    score++; // Punkt wenn Plattform verschwindet
+                    platforms.splice(i, 1);
+                    spawnPlatform(0);
+                    score++;
                 }
+            });
+
+            stars.forEach((s, i) => {
+                s.y += diff;
+                if (s.y > canvas.height) stars.splice(i, 1);
             });
         }
 
-        // Game Over Check
         if (player.y > canvas.height) {
             gameOver = true;
             finalScoreMsg.innerText = score;
@@ -129,15 +148,24 @@
 
         // Spieler
         ctx.fillStyle = "#2ECC71";
+        ctx.shadowBlur = 10; ctx.shadowColor = "#2ECC71";
         ctx.fillRect(player.x, player.y, player.size, player.size);
+        ctx.shadowBlur = 0;
 
         // Plattformen
         ctx.fillStyle = "#34495E";
-        platforms.forEach(p => {
-            ctx.fillRect(p.x, p.y, p.w, p.h);
+        platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
+
+        // Sterne (Gelbe Quadrate)
+        ctx.fillStyle = "#F1C40F";
+        stars.forEach(s => {
+            if (s.active) {
+                ctx.beginPath();
+                ctx.arc(s.x + 10, s.y + 10, 8, 0, Math.PI * 2);
+                ctx.fill();
+            }
         });
 
-        // Score Anzeige
         ctx.fillStyle = "#333";
         ctx.font = "bold 20px Arial";
         ctx.fillText("Score: " + score, 20, 40);
