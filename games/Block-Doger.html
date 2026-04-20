@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Mein Browser-Spiel</title>
+    <style>
+        body { margin: 0; background: #222; color: white; font-family: sans-serif; overflow: hidden; text-align: center; }
+        canvas { background: #000; display: block; margin: 20px auto; border: 2px solid #444; cursor: none; }
+    </style>
+</head>
+<body>
+    <h1>Block-Dodger</h1>
+    <p>Weiche den roten Blöcken aus! Score: <span id="score">0</span></p>
+    <canvas id="gameCanvas" width="400" height="500"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreElement = document.getElementById("score");
+
+        let score = 0;
+        let gameOver = false;
+        let player = { x: 200, y: 450, size: 20 };
+        let enemies = [];
+
+        // Maus-Steuerung
+        canvas.addEventListener("mousemove", (e) => {
+            let rect = canvas.getBoundingClientRect();
+            player.x = e.clientX - rect.left - player.size / 2;
+        });
+
+        function spawnEnemy() {
+            if (gameOver) return;
+            enemies.push({
+                x: Math.random() * (canvas.width - 20),
+                y: -20,
+                size: 20,
+                speed: 3 + Math.random() * 4
+            });
+            setTimeout(spawnEnemy, 600); // Alle 0.6 Sek ein neuer Gegner
+        }
+
+        function update() {
+            if (gameOver) return;
+
+            enemies.forEach((enemy, index) => {
+                enemy.y += enemy.speed;
+
+                // Kollisionsabfrage
+                if (player.x < enemy.x + enemy.size &&
+                    player.x + player.size > enemy.x &&
+                    player.y < enemy.y + enemy.size &&
+                    player.y + player.size > enemy.y) {
+                    gameOver = true;
+                    alert("Game Over! Score: " + score);
+                    location.reload(); // Neustart
+                }
+
+                // Score erhöhen und Gegner entfernen
+                if (enemy.y > canvas.height) {
+                    enemies.splice(index, 1);
+                    score++;
+                    scoreElement.innerText = score;
+                }
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Spieler zeichnen (Blau)
+            ctx.fillStyle = "#0095DD";
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+
+            // Gegner zeichnen (Rot)
+            ctx.fillStyle = "#FF4136";
+            enemies.forEach(enemy => {
+                ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+            });
+
+            update();
+            requestAnimationFrame(draw);
+        }
+
+        spawnEnemy();
+        draw();
+    </script>
+</body>
+</html>
