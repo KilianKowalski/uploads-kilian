@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quali-Planer Kilian</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --primary: #2563eb;
+            --accent: #f59e0b;
+            --text: #1f2937;
+            --text-light: #6b7280;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { font-weight: 800; margin-bottom: 5px; color: var(--primary); }
+        .subtitle { color: var(--text-light); margin-bottom: 30px; }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--primary);
+            transition: transform 0.2s;
+        }
+
+        .card:active { transform: scale(0.98); }
+
+        .card.project { border-left-color: var(--accent); }
+
+        .subject { font-size: 1.2rem; font-weight: 600; margin-bottom: 5px; }
+        .date { font-weight: 500; color: var(--primary); }
+        .info { font-size: 0.9rem; color: var(--text-light); margin-top: 8px; line-height: 1.4; }
+        
+        .timer {
+            margin-top: 15px;
+            padding: 10px;
+            background: #eff6ff;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .project-grid {
+            display: grid;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .project-day {
+            background: #fffbeb;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid #fef3c7;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #eee;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Quali 2026</h1>
+    <p class="subtitle">Deine persönlichen Prüfungstermine</p>
+
+    <div class="container" id="exam-list">
+        <!-- Cards werden per JS eingefügt -->
+    </div>
+
+    <script>
+        const exams = [
+            { name: "Musik", date: "2026-05-11T10:30:00", loc: "Musikraum", staff: "F. Ebert, M. Pöhner", detail: "Praktische Prüfung" },
+            { name: "Englisch Mündlich", date: "2026-05-19T10:25:00", loc: "Zimmer 9R", staff: "Hr. Pianksi, Hr. Pöhner", detail: "15 Minuten Prüfung" },
+            { 
+                name: "WiK Projektprüfung", 
+                date: "2026-06-15T08:00:00", 
+                loc: "Schule / WiK-Raum", 
+                staff: "Hr. Pianski, Fr. Schmitt",
+                isProject: true,
+                schedule: [
+                    "Mo: 8:00 Infostunde & Leittext. Ab 9:50 Gruppenarbeit.",
+                    "Di: Schalterstunden (8:00-9:30 Schmitt / 9:50-13:05 Pianski)",
+                    "Mi: Betreuung durch Hr. Pianski (8:00-13:05)",
+                    "Do: PRAKTISCHE PRÜFUNG (9:00-11:20)",
+                    "Fr: Abschluss Doku & Präsentation Vorbereitung",
+                    "Mo 22.06: 8:00 ABGABE & Präsentationen (siehe Plan)"
+                ]
+            },
+            { name: "Englisch Schriftlich", date: "2026-06-29T08:30:00", loc: "Turnhalle", staff: "Gesamtaufsicht", detail: "120min (Teile A-F)" },
+            { name: "Deutsch Schriftlich", date: "2026-06-30T08:30:00", loc: "Turnhalle", staff: "Gesamtaufsicht", detail: "195min (Wörterbuch erlaubt)" },
+            { name: "Mathe Schriftlich", date: "2026-07-01T08:30:00", loc: "Turnhalle", staff: "Gesamtaufsicht", detail: "Teil A (ohne TR) | Teil B (mit Hilfsmittel)" }
+        ];
+
+        function updateTimers() {
+            const list = document.getElementById('exam-list');
+            list.innerHTML = '';
+
+            exams.forEach((exam, index) => {
+                const now = new Date().getTime();
+                const examDate = new Date(exam.date).getTime();
+                const diff = examDate - now;
+
+                let timerText = "";
+                if (diff > 0) {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+                    timerText = `Noch ${days}t ${hours}h ${mins}m ${secs}s`;
+                } else {
+                    timerText = "Prüfung läuft oder beendet";
+                }
+
+                const card = document.createElement('div');
+                card.className = `card ${exam.isProject ? 'project' : ''}`;
+                
+                let projectHTML = '';
+                if(exam.isProject) {
+                    projectHTML = `<div class="project-grid">` + 
+                        exam.schedule.map(s => `<div class="project-day">${s}</div>`).join('') + 
+                        `</div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="date">${new Date(exam.date).toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit' })} - ${new Date(exam.date).toLocaleTimeString('de-DE', {hour: '2-digit', minute:'2-digit'})} Uhr</div>
+                    <div class="subject">${exam.name}</div>
+                    <div class="info">
+                        <span class="badge">📍 ${exam.loc}</span>
+                        <span class="badge">👤 ${exam.staff}</span>
+                        <p>${exam.detail || ''}</p>
+                    </div>
+                    ${projectHTML}
+                    <div class="timer" id="timer-${index}">${timerText}</div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        setInterval(updateTimers, 1000);
+        updateTimers();
+    </script>
+</body>
+</html>
