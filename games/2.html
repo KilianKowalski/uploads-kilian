@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Jumper Pro</title>
+    <title>Jumper Pro (New Update)</title>
     <style>
         body { margin: 0; background: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
         #game-container { position: relative; }
@@ -20,6 +20,8 @@
             transition: transform 0.2s;
         }
         button:hover { transform: scale(1.1); background: #27ae60; }
+        .score-info { font-size: 20px; margin: 5px 0; }
+        #highscore-display { color: #F1C40F; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -28,7 +30,9 @@
     <canvas id="gameCanvas" width="400" height="600"></canvas>
     <div id="overlay">
         <h1>GAME OVER</h1>
-        <p>Score: <span id="finalScore">0</span></p>
+        <p class="score-info">Score: <span id="finalScore">0</span></p>
+        <p class="score-info">Highscore: <span id="highScoreMsg">0</span></p>
+        <p style="font-size: 14px; color: #aaa;">(Leertaste zum Neustarten)</p>
         <button onclick="resetGame()">Nochmal spielen</button>
     </div>
 </div>
@@ -38,8 +42,10 @@
     const ctx = canvas.getContext("2d");
     const overlay = document.getElementById("overlay");
     const finalScoreMsg = document.getElementById("finalScore");
+    const highScoreMsg = document.getElementById("highScoreMsg");
 
     let player, platforms, stars, score, gameOver, keys = {};
+    let highScore = localStorage.getItem("jumperHighScore") || 0;
 
     function init() {
         score = 0;
@@ -52,11 +58,9 @@
             jumpStrength: -11, gravity: 0.45
         };
 
-        // Startplattform
         platforms = [{ x: 150, y: 500, w: 100, h: 15, moving: false }];
         stars = []; 
         
-        // Initialer Levelaufbau (Abstand garantiert schaffbar)
         for (let i = 0; i < 7; i++) {
             spawnPlatform(500 - (i * 90));
         }
@@ -65,24 +69,27 @@
     function spawnPlatform(yPos) {
         let w = 70;
         let x = Math.random() * (canvas.width - w);
-        // Chance auf eine sich bewegende Plattform (ca. 30%)
         let isMoving = Math.random() > 0.7;
         
         platforms.push({ 
-            x, 
-            y: yPos, 
-            w, 
-            h: 15, 
+            x, y: yPos, w, h: 15, 
             moving: isMoving, 
             speed: (Math.random() * 2 + 1) * (Math.random() > 0.5 ? 1 : -1) 
         });
 
-        if (Math.random() > 0.85) {
-            stars.push({ x: x + w/2 - 10, y: yPos - 30, size: 20, active: true });
+        // Extra Jumps seltener machen (nur 8% Chance statt 20%)
+        if (Math.random() > 0.92) {
+            stars.push({ x: x + w/2 - 10, y: yPos - 35, size: 22, active: true });
         }
     }
 
-    window.addEventListener("keydown", e => keys[e.code] = true);
+    window.addEventListener("keydown", e => {
+        keys[e.code] = true;
+        // Neustart mit Leertaste
+        if (e.code === "Space" && gameOver) {
+            resetGame();
+        }
+    });
     window.addEventListener("keyup", e => keys[e.code] = false);
 
     function resetGame() {
@@ -103,20 +110,16 @@
         if (player.x < -20) player.x = canvas.width;
         if (player.x > canvas.width) player.x = -20;
 
-        // Plattform-Logik
         platforms.forEach(p => {
-            // Bewegung der Plattformen
             if (p.moving) {
                 p.x += p.speed;
                 if (p.x <= 0 || p.x + p.w >= canvas.width) p.speed *= -1;
             }
 
-            // Kollision
             if (player.vy > 0) {
                 if (player.x < p.x + p.w && player.x + player.size > p.x &&
                     player.y + player.size > p.y && player.y + player.size < p.y + p.h + 15) {
                     player.vy = player.jumpStrength;
-                    // Wenn Plattform bewegt, kriegt Spieler kleinen Kick in die Richtung
                     if(p.moving) player.x += p.speed; 
                 }
             }
@@ -126,8 +129,8 @@
             if (s.active && player.x < s.x + s.size && player.x + player.size > s.x &&
                 player.y < s.y + s.size && player.y + player.size > s.y) {
                 s.active = false;
-                player.vy = -18;
-                score += 5;
+                player.vy = -24; // NOCH HÖHERER SPRUNG (vorher -20)
+                score += 10;
             }
         });
 
@@ -139,7 +142,6 @@
                 p.y += diff;
                 if (p.y > canvas.height) {
                     platforms.splice(i, 1);
-                    // Neue Plattform oben spawnen mit festem Maximalabstand
                     spawnPlatform(0);
                     score++;
                 }
@@ -153,7 +155,12 @@
 
         if (player.y > canvas.height) {
             gameOver = true;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem("jumperHighScore", highScore);
+            }
             finalScoreMsg.innerText = score;
+            highScoreMsg.innerText = highScore;
             overlay.style.display = "flex";
         }
     }
@@ -162,31 +169,32 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if (!gameOver) {
-            // Spieler
             ctx.fillStyle = "#2ECC71";
             ctx.shadowBlur = 10; ctx.shadowColor = "#2ECC71";
             ctx.fillRect(player.x, player.y, player.size, player.size);
             ctx.shadowBlur = 0;
 
-            // Plattformen
             platforms.forEach(p => {
-                ctx.fillStyle = p.moving ? "#3498DB" : "#34495E"; // Blau wenn sie sich bewegt
+                ctx.fillStyle = p.moving ? "#3498DB" : "#34495E";
                 ctx.fillRect(p.x, p.y, p.w, p.h);
             });
 
-            // Sterne
-            ctx.fillStyle = "#F1C40F";
             stars.forEach(s => {
                 if (s.active) {
+                    ctx.fillStyle = "#F1C40F";
+                    ctx.shadowBlur = 15; ctx.shadowColor = "#F1C40F";
                     ctx.beginPath();
-                    ctx.arc(s.x + 10, s.y + 10, 8, 0, Math.PI * 2);
+                    ctx.arc(s.x + 11, s.y + 11, 10, 0, Math.PI * 2);
                     ctx.fill();
+                    ctx.shadowBlur = 0;
                 }
             });
 
             ctx.fillStyle = "#333";
             ctx.font = "bold 20px Arial";
             ctx.fillText("Score: " + score, 20, 40);
+            ctx.font = "14px Arial";
+            ctx.fillText("Best: " + highScore, 20, 60);
 
             update();
         }
