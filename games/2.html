@@ -52,21 +52,32 @@
             jumpStrength: -11, gravity: 0.45
         };
 
-        platforms = [{ x: 150, y: 500, w: 100, h: 15 }];
-        stars = []; // Extra Jumps
+        // Startplattform
+        platforms = [{ x: 150, y: 500, w: 100, h: 15, moving: false }];
+        stars = []; 
         
+        // Initialer Levelaufbau (Abstand garantiert schaffbar)
         for (let i = 0; i < 7; i++) {
-            spawnPlatform(i * 85);
+            spawnPlatform(500 - (i * 90));
         }
     }
 
     function spawnPlatform(yPos) {
         let w = 70;
         let x = Math.random() * (canvas.width - w);
-        platforms.push({ x, y: yPos, w, h: 15 });
+        // Chance auf eine sich bewegende Plattform (ca. 30%)
+        let isMoving = Math.random() > 0.7;
+        
+        platforms.push({ 
+            x, 
+            y: yPos, 
+            w, 
+            h: 15, 
+            moving: isMoving, 
+            speed: (Math.random() * 2 + 1) * (Math.random() > 0.5 ? 1 : -1) 
+        });
 
-        // Chance auf einen Stern (Extra Jump) auf dieser Plattform
-        if (Math.random() > 0.8) {
+        if (Math.random() > 0.85) {
             stars.push({ x: x + w/2 - 10, y: yPos - 30, size: 20, active: true });
         }
     }
@@ -76,13 +87,11 @@
 
     function resetGame() {
         init();
-        draw();
     }
 
     function update() {
         if (gameOver) return;
 
-        // Steuerung mit Pfeiltasten ODER A/D
         if (keys["ArrowLeft"] || keys["KeyA"]) player.vx = -6;
         else if (keys["ArrowRight"] || keys["KeyD"]) player.vx = 6;
         else player.vx = 0;
@@ -94,27 +103,34 @@
         if (player.x < -20) player.x = canvas.width;
         if (player.x > canvas.width) player.x = -20;
 
-        // Normale Plattform-Kollision
-        if (player.vy > 0) {
-            platforms.forEach(p => {
+        // Plattform-Logik
+        platforms.forEach(p => {
+            // Bewegung der Plattformen
+            if (p.moving) {
+                p.x += p.speed;
+                if (p.x <= 0 || p.x + p.w >= canvas.width) p.speed *= -1;
+            }
+
+            // Kollision
+            if (player.vy > 0) {
                 if (player.x < p.x + p.w && player.x + player.size > p.x &&
                     player.y + player.size > p.y && player.y + player.size < p.y + p.h + 15) {
                     player.vy = player.jumpStrength;
+                    // Wenn Plattform bewegt, kriegt Spieler kleinen Kick in die Richtung
+                    if(p.moving) player.x += p.speed; 
                 }
-            });
-        }
+            }
+        });
 
-        // Stern-Kollision (Super Jump)
         stars.forEach(s => {
             if (s.active && player.x < s.x + s.size && player.x + player.size > s.x &&
                 player.y < s.y + s.size && player.y + player.size > s.y) {
                 s.active = false;
-                player.vy = -20; // Extra starker Sprung!
+                player.vy = -18;
                 score += 5;
             }
         });
 
-        // Kamera-Scroll
         if (player.y < 250) {
             let diff = 250 - player.y;
             player.y = 250;
@@ -123,6 +139,7 @@
                 p.y += diff;
                 if (p.y > canvas.height) {
                     platforms.splice(i, 1);
+                    // Neue Plattform oben spawnen mit festem Maximalabstand
                     spawnPlatform(0);
                     score++;
                 }
@@ -142,35 +159,37 @@
     }
 
     function draw() {
-        if (gameOver) return;
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Spieler
-        ctx.fillStyle = "#2ECC71";
-        ctx.shadowBlur = 10; ctx.shadowColor = "#2ECC71";
-        ctx.fillRect(player.x, player.y, player.size, player.size);
-        ctx.shadowBlur = 0;
+        if (!gameOver) {
+            // Spieler
+            ctx.fillStyle = "#2ECC71";
+            ctx.shadowBlur = 10; ctx.shadowColor = "#2ECC71";
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+            ctx.shadowBlur = 0;
 
-        // Plattformen
-        ctx.fillStyle = "#34495E";
-        platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
+            // Plattformen
+            platforms.forEach(p => {
+                ctx.fillStyle = p.moving ? "#3498DB" : "#34495E"; // Blau wenn sie sich bewegt
+                ctx.fillRect(p.x, p.y, p.w, p.h);
+            });
 
-        // Sterne (Gelbe Quadrate)
-        ctx.fillStyle = "#F1C40F";
-        stars.forEach(s => {
-            if (s.active) {
-                ctx.beginPath();
-                ctx.arc(s.x + 10, s.y + 10, 8, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        });
+            // Sterne
+            ctx.fillStyle = "#F1C40F";
+            stars.forEach(s => {
+                if (s.active) {
+                    ctx.beginPath();
+                    ctx.arc(s.x + 10, s.y + 10, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
 
-        ctx.fillStyle = "#333";
-        ctx.font = "bold 20px Arial";
-        ctx.fillText("Score: " + score, 20, 40);
+            ctx.fillStyle = "#333";
+            ctx.font = "bold 20px Arial";
+            ctx.fillText("Score: " + score, 20, 40);
 
-        update();
+            update();
+        }
         requestAnimationFrame(draw);
     }
 
