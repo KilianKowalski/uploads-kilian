@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quali Kilian</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --timer-bg: #000000;
+            --color-musik: #4b5563;
+            --color-englisch: #facc15;
+            --color-wik: #f59e0b;
+            --color-deutsch: #ef4444;
+            --color-mathe: #3b82f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { font-weight: 800; margin-bottom: 5px; color: #f1f5f9; letter-spacing: -1px; }
+        .subtitle { color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem; }
+
+        .container { width: 100%; max-width: 550px; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        /* Individuelle Outline-Farben */
+        .card.musik { border-top: 5px solid var(--color-musik); }
+        .card.englisch { border-top: 5px solid var(--color-englisch); }
+        .card.wik { border-top: 5px solid var(--color-wik); }
+        .card.deutsch { border-top: 5px solid var(--color-deutsch); }
+        .card.mathe { border-top: 5px solid var(--color-mathe); }
+
+        .subject { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; display: block; }
+        .date-row { color: var(--text-main); font-weight: 600; margin-bottom: 15px; font-size: 0.95rem; }
+
+        .badge-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .badge { background: rgba(255,255,255,0.07); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.05); }
+
+        .timer-box {
+            background: var(--timer-bg);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .timer-unit { text-align: center; }
+        .timer-val { 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 1.4rem; 
+            color: #ffffff; 
+            display: block; 
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+        }
+        .timer-label { font-size: 0.6rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
+
+        .project-schedule { margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .day-strip { background: rgba(245, 158, 11, 0.08); margin-bottom: 6px; padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; border-left: 3px solid var(--color-wik); line-height: 1.4; }
+
+        @media (max-width: 480px) {
+            .timer-val { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Quali 2026</h1>
+    <p class="subtitle">Prüfungsplan • von Kilian</p>
+
+    <div class="container" id="exam-list"></div>
+
+    <script>
+        const exams = [
+            { id: 1, name: "Musik", date: "2026-05-11T10:30:00", loc: "Musikraum", staff: "Ebert, Pöhner", type: "musik" },
+            { id: 2, name: "Englisch Mündlich", date: "2026-05-19T10:25:00", loc: "9R Zimmer", staff: "Pianski, Pöhner", type: "englisch" },
+            { 
+                id: 3, name: "WiK Projektprüfung", date: "2026-06-15T08:00:00", loc: "Schule", staff: "Pianski, Schmitt", type: "wik",
+                days: [
+                    "<b>Mo:</b> Infostunde & Gruppenarbeit",
+                    "<b>Di:</b> Schalterstunden (Schmitt / Pianski)",
+                    "<b>Mi:</b> Betreuung (Hr. Pianski)",
+                    "<b>Do:</b> PRAKTISCHE PRÜFUNG (09:00 - 11:20)",
+                    "<b>Fr:</b> Dokumentation & Präsentation-Vorbereitung",
+                    "<b>Mo 22.06:</b> Abgabe & Präsentationen"
+                ]
+            },
+            { id: 4, name: "Englisch (Schriftlich)", date: "2026-06-29T08:30:00", loc: "Turnhalle", staff: "Aufsicht", type: "englisch" },
+            { id: 5, name: "Deutsch (Schriftlich)", date: "2026-06-30T08:30:00", loc: "Turnhalle", staff: "Aufsicht", type: "deutsch" },
+            { id: 6, name: "Mathematik", date: "2026-07-01T08:30:00", loc: "Turnhalle", staff: "Aufsicht", type: "mathe" }
+        ];
+
+        function createTimerHTML(diff) {
+            if (diff <= 0) return `<div class="timer-val" style="color:var(--text-muted)">VORBEI</div>`;
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            return `
+                <div class="timer-unit"><span class="timer-val">${d}</span><span class="timer-label">Tage</span></div>
+                <div class="timer-unit"><span class="timer-val">${h}</span><span class="timer-label">Std</span></div>
+                <div class="timer-unit"><span class="timer-val">${m}</span><span class="timer-label">Min</span></div>
+                <div class="timer-unit"><span class="timer-val">${s}</span><span class="timer-label">Sek</span></div>`;
+        }
+
+        function render() {
+            const container = document.getElementById('exam-list');
+            const now = new Date().getTime();
+            container.innerHTML = exams.map(exam => {
+                const diff = new Date(exam.date).getTime() - now;
+                return `
+                    <div class="card ${exam.type}">
+                        <div class="date-row">📅 ${new Date(exam.date).toLocaleDateString('de-DE', {weekday: 'short', day: '2-digit', month: '2-digit'})} • ${new Date(exam.date).toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'})} Uhr</div>
+                        <span class="subject">${exam.name}</span>
+                        <div class="badge-container">
+                            <span class="badge">📍 ${exam.loc}</span>
+                            <span class="badge">👤 ${exam.staff}</span>
+                        </div>
+                        ${exam.days ? `<div class="project-schedule">${exam.days.map(d => `<div class="day-strip">${d}</div>`).join('')}</div>` : ''}
+                        <div class="timer-box">${createTimerHTML(diff)}</div>
+                    </div>`;
+            }).join('');
+        }
+        setInterval(render, 1000);
+        render();
+    </script>
+</body>
+</html>
