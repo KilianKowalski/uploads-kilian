@@ -17,6 +17,7 @@
             --color-es: #f59e0b;
             --color-deutsch: #ef4444;
             --color-mathe: #3b82f6;
+            --color-gpg: #804639;
         }
 
         body {
@@ -48,6 +49,7 @@
         /* Individuelle Outline-Farben */
         .card.musik { border-top: 5px solid var(--color-musik); }
         .card.englisch { border-top: 5px solid var(--color-englisch); }
+        .card.gpg { border-top: 5px solid var(--color-gpg); }
         .card.es { border-top: 5px solid var(--color-es); }
         .card.deutsch { border-top: 5px solid var(--color-deutsch); }
         .card.mathe { border-top: 5px solid var(--color-mathe); }
@@ -89,25 +91,25 @@
 <body>
 
     <h1>Quali 2026</h1>
-    <p class="subtitle">Prüfungsplan • von Lias Kappl</p>
+    <p class="subtitle">Prüfungsplan • von Lias Veen</p>
 
     <div class="container" id="exam-list"></div>
 
     <script>
         const exams = [
-            { id: 1, name: "Musik", date: "2026-05-11T08:30:00", loc: "Musikraum", staff: "Ebert, Pöhner", type: "musik" },
-            { id: 2, name: "Englisch Mündlich", date: "2026-05-19T08:25:00", loc: "9R Zimmer", staff: "Pianski, Pöhner", type: "englisch" },
+            { id: 1, name: "Musik", date: "2026-05-11T09:30:00", loc: "Musikraum", staff: "Ebert, Pöhner", type: "musik" },
             { 
-                id: 3, name: "ES Projektprüfung", date: "2026-06-15T08:00:00", loc: "Schule", staff: "Pianski, Zweig", type: "es",
+                id: 2, name: "ES Projektprüfung", date: "2026-06-15T08:00:00", loc: "Schule", staff: "Pianski, Zweig", type: "es",
                 days: [
                     "<b>Mo:</b> Infostunde & Gruppenarbeit",
                     "<b>Di:</b> Gruppenarbeit",
                     "<b>Mi:</b> Betreuung",
-                    "<b>Do:</b> PRAKTISCHE PRÜFUNG (09:00 - 11:20)",
-                    "<b>Fr:</b> Dokumentation & Präsentation-Vorbereitung",
+                    "<b>Do:</b> (Hab keine Ahnung",
+                    "<b>Fr:</b> (Kann ich dir leider nicht sagen)",
                     "<b>Mo 22.06:</b> Abgabe & Präsentationen"
                 ]
             },
+            { id: 3, name: "GPG", date: "2026-07-02T08:30:00", loc: "keine ahnung wo", staff: "Gebhardt, Ebert", type: "gpg" },
             { id: 4, name: "Englisch (Schriftlich)", date: "2026-06-29T08:30:00", loc: "Turnhalle", staff: "Aufsicht", type: "englisch" },
             { id: 5, name: "Deutsch (Schriftlich)", date: "2026-06-30T08:30:00", loc: "Turnhalle", staff: "Aufsicht", type: "deutsch" },
             { id: 6, name: "Mathematik", date: "2026-07-01T08:30:00", loc: "Turnhalle", staff: "Aufsicht", type: "mathe" }
