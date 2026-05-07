@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Testlabor</title>
+    <style>
+        :root { --bg-color: #f0f0f0; --text-color: #333; }
+        body.dark-mode { --bg-color: #1a1a1a; --text-color: #f0f0f0; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; transition: background-color 0.5s ease, color 0.5s ease; }
+        
+        /* --- BUTTON CSS (vereinfacht) --- */
+        .switch { display: block; background-color: black; width: 150px; height: 195px; border-radius: 5px; padding: 20px; perspective: 700px; }
+        .switch input { display: none; }
+        .switch .button { display: block; transition: all 0.3s cubic-bezier(1, 0, 1, 1); transform-origin: center center -20px; transform: translateZ(20px) rotateX(-25deg); transform-style: preserve-3d; background: linear-gradient(#980000 0%, #6f0000 30%, #6f0000 70%, #980000 100%); height: 100%; position: relative; cursor: pointer; }
+        .switch input:checked + .button { transform: translateZ(20px) rotateX(25deg); box-shadow: 0 -10px 20px #ff1818; }
+        .switch .light { opacity: 0; position: absolute; width: 100%; height: 100%; background-image: radial-gradient(#ffc97e, #ff1818 40%, transparent 70%); }
+        .switch input:checked + .button .light { animation: flicker 0.2s infinite 0.3s; }
+        @keyframes flicker { 0% { opacity: 1; } 80% { opacity: 0.8; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <h1>Mode Switcher</h1>
+    <label class="switch">
+        <input type="checkbox" id="mode-toggle">
+        <div class="button"><div class="light"></div></div>
+    </label>
+    <script>
+        const toggle = document.getElementById('mode-toggle');
+        toggle.addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode', toggle.checked);
+        });
+    </script>
+</body>
+</html>
