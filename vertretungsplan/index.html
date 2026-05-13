@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mein Vertretungsplan</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f9; padding: 20px; color: #333; }
+    .card { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    select, button { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; }
+    .ausfall { border-left: 5px solid #ff4d4d; }
+    .vertretung { border-left: 5px solid #4da6ff; }
+  </style>
+</head>
+<body>
+
+  <h1>Schule Baunach – Vertretungsplan</h1>
+  
+  <label for="classSelect">Deine Klasse wählen:</label>
+  <select id="classSelect" onchange="saveClass()">
+    <option value="">-- Bitte wählen --</option>
+    <option value="5a">Klasse 5a</option>
+    <option value="6a">Klasse 6a</option>
+    <option value="7a">Klasse 7a</option>
+    <!-- Füge hier alle Klassen deiner Schule hinzu -->
+  </select>
+
+  <div id="plan-container">Daten werden geladen...</div>
+
+  <script>
+    // Beim Laden der Seite gespeicherte Klasse auslesen
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedClass = localStorage.getItem("myClass");
+      if (savedClass) {
+        document.getElementById("classSelect").value = savedClass;
+      }
+      loadVertretungsplan();
+    });
+
+    function saveClass() {
+      const selectedClass = document.getElementById("classSelect").value;
+      localStorage.setItem("myClass", selectedClass);
+      loadVertretungsplan(); // Plan neu filtern
+    }
+
+    async function loadVertretungsplan() {
+      const container = document.getElementById("plan-container");
+      const currentClass = localStorage.getItem("myClass");
+
+      if (!currentClass) {
+        container.innerHTML = "<p>Bitte wähle zuerst deine Klasse aus.</p>";
+        return;
+      }
+
+      try {
+        // Ruft die Netlify-Funktion auf
+        const response = await fetch('/.netlify/functions/get-monitor');
+        const htmlText = await response.text();
+
+        // Hier nutzen wir den Browser, um das HTML von Untis zu durchsuchen
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        
+        // HINWEIS: Hier müssen wir die exakten HTML-Elemente (Tabellen/Klassen) 
+        // von der Untis-Seite auslesen. Das machen wir im nächsten Schritt!
+        container.innerHTML = `<p>Plan für Klasse <b>${currentClass}</b> wird vorbereitet...</p>`;
+        
+        console.log("Untis HTML erfolgreich geladen:", doc);
+
+      } catch (error) {
+        container.innerHTML = "<p>Fehler beim Laden der Daten.</p>";
+      }
+    }
+  </script>
+</body>
+</html>
