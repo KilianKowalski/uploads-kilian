@@ -80,6 +80,11 @@
             align-items: center;
             gap: 8px;
             font-weight: 500;
+            cursor: pointer; /* Zeigt, dass man draufklicken kann */
+        }
+        
+        .weather-display:hover {
+            color: #ffffff;
         }
 
         .weather-sub {
@@ -222,8 +227,8 @@
     <div class="top-bar">
         <div class="info-left glass-card">
             <div class="time-display" id="clock">00:00:00</div>
-            <div class="weather-display" id="weather-main">
-                <i class="fa-solid fa-spinner fa-spin"></i> Lade Wetter & Ort...
+            <div class="weather-display" id="weather-main" onclick="promptLocation()">
+                <i class="fa-solid fa-spinner fa-spin"></i> Lade Wetter...
             </div>
             <div class="weather-sub" id="weather-sub"></div>
         </div>
@@ -278,7 +283,6 @@
     <script>
         function updateTimeAndGreeting() {
             const now = new Date();
-            
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const seconds = String(now.getSeconds()).padStart(2, '0');
@@ -287,76 +291,91 @@
             const currentHour = now.getHours();
             let greetingText = "Hallo Maus";
 
-            if (currentHour >= 5 && currentHour < 12) {
-                greetingText = "Guten Morgen, Maus";
-            } else if (currentHour >= 12 && currentHour < 14) {
-                greetingText = "Guten Mittag, Maus";
-            } else if (currentHour >= 14 && currentHour < 18) {
-                greetingText = "Guten Nachmittag, Maus";
-            } else if (currentHour >= 18 && currentHour < 23) {
-                greetingText = "Guten Abend, Maus";
-            } else {
-                greetingText = "Gute Nacht, Maus";
-            }
+            if (currentHour >= 5 && currentHour < 12) { greetingText = "Guten Morgen, Maus"; }
+            else if (currentHour >= 12 && currentHour < 14) { greetingText = "Guten Mittag, Maus"; }
+            else if (currentHour >= 14 && currentHour < 18) { greetingText = "Guten Nachmittag, Maus"; }
+            else if (currentHour >= 18 && currentHour < 23) { greetingText = "Guten Abend, Maus"; }
+            else { greetingText = "Gute Nacht, Maus"; }
             
             document.getElementById('greeting').innerText = greetingText;
         }
         setInterval(updateTimeAndGreeting, 1000);
         updateTimeAndGreeting();
 
-        function getWeather() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    
-                    let locationName = "";
-                    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`)
-                        .then(res => res.json())
-                        .then(locData => {
-                            locationName = locData.address.city || locData.address.town || locData.address.village || locData.address.suburb || "Dein Standort";
-                        })
-                        .catch(() => {
-                            locationName = "Dein Standort";
-                        })
-                        .finally(() => {
-                            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,weather_code&hourly=uv_index&timezone=auto`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    const current = data.current;
-                                    const temp = Math.round(current.temperature_2m);
-                                    const precip = current.precipitation;
-                                    const code = current.weather_code;
-                                    
-                                    const currentHour = new Date().getHours();
-                                    const uvIndex = data.hourly.uv_index[currentHour] !== undefined ? Math.round(data.hourly.uv_index[currentHour]) : 0;
-                                    
-                                    let condition = "Unbekannt";
-                                    let icon = "fa-cloud";
-
-                                    if (code === 0) { condition = "Klar"; icon = "fa-sun"; }
-                                    else if ([1, 2, 3].includes(code)) { condition = "Bewölkt"; icon = "fa-cloud-sun"; }
-                                    else if ([45, 48].includes(code)) { condition = "Nebel"; icon = "fa-smog"; }
-                                    else if ([51, 53, 55].includes(code)) { condition = "Nieselregen"; icon = "fa-cloud-rain"; }
-                                    else if ([61, 63, 65, 80, 81, 82].includes(code)) { condition = "Regen"; icon = "fa-cloud-showers-heavy"; }
-                                    else if ([71, 73, 75, 85, 86].includes(code)) { condition = "Schnee"; icon = "fa-snowflake"; }
-                                    else if ([95, 96, 99].includes(code)) { condition = "Gewitter"; icon = "fa-cloud-bolt"; }
-
-                                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid ${icon}"></i> ${locationName} · ${temp}°C · ${condition}`;
-                                    document.getElementById('weather-sub').innerHTML = `<span><i class="fa-solid fa-droplet"></i> ${precip}mm</span> <span><i class="fa-solid fa-triangle-exclamation"></i> UV: ${uvIndex}</span>`;
-                                })
-                                .catch(() => {
-                                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Wetter N/A`;
-                                });
-                        });
-                }, () => {
-                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-location-dot"></i> Standort blockiert`;
-                });
-            } else {
-                document.getElementById('weather-main').innerHTML = `Nicht unterstützt`;
+        // Wetter & Speicher-Logik
+        function promptLocation() {
+            const userCity = prompt("Für welche Stadt möchtest du das Wetter sehen?");
+            if (userCity) {
+                document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Suche Stadt...`;
+                fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userCity)}&format=json&limit=1`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            const lat = data[0].lat;
+                            const lon = data[0].lon;
+                            const name = data[0].display_name.split(',')[0];
+                            
+                            localStorage.setItem('weather_lat', lat);
+                            localStorage.setItem('weather_lon', lon);
+                            localStorage.setItem('weather_name', name);
+                            
+                            fetchWeatherData(lat, lon, name);
+                        } else {
+                            alert("Stadt nicht gefunden. Bitte versuche es erneut.");
+                            loadSavedOrCreate();
+                        }
+                    })
+                    .catch(() => {
+                        alert("Fehler bei der Ortssuche.");
+                        loadSavedOrCreate();
+                    });
             }
         }
-        getWeather();
+
+        function fetchWeatherData(lat, lon, name) {
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,weather_code&hourly=uv_index&timezone=auto`)
+                .then(response => response.json())
+                .then(data => {
+                    const current = data.current;
+                    const temp = Math.round(current.temperature_2m);
+                    const precip = current.precipitation;
+                    const code = current.weather_code;
+                    
+                    const currentHour = new Date().getHours();
+                    const uvIndex = data.hourly.uv_index[currentHour] !== undefined ? Math.round(data.hourly.uv_index[currentHour]) : 0;
+                    
+                    let condition = "Unbekannt";
+                    let icon = "fa-cloud";
+
+                    if (code === 0) { condition = "Klar"; icon = "fa-sun"; }
+                    else if ([1, 2, 3].includes(code)) { condition = "Bewölkt"; icon = "fa-cloud-sun"; }
+                    else if ([45, 48].includes(code)) { condition = "Nebel"; icon = "fa-smog"; }
+                    else if ([51, 53, 55].includes(code)) { condition = "Nieselregen"; icon = "fa-cloud-rain"; }
+                    else if ([61, 63, 65, 80, 81, 82].includes(code)) { condition = "Regen"; icon = "fa-cloud-showers-heavy"; }
+                    else if ([71, 73, 75, 85, 86].includes(code)) { condition = "Schnee"; icon = "fa-snowflake"; }
+                    else if ([95, 96, 99].includes(code)) { condition = "Gewitter"; icon = "fa-cloud-bolt"; }
+
+                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid ${icon}"></i> ${name} · ${temp}°C · ${condition}`;
+                    document.getElementById('weather-sub').innerHTML = `<span><i class="fa-solid fa-droplet"></i> ${precip}mm</span> <span><i class="fa-solid fa-triangle-exclamation"></i> UV: ${uvIndex}</span>`;
+                })
+                .catch(() => {
+                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Wetter N/A`;
+                });
+        }
+
+        function loadSavedOrCreate() {
+            const savedLat = localStorage.getItem('weather_lat');
+            const savedLon = localStorage.getItem('weather_lon');
+            const savedName = localStorage.getItem('weather_name');
+
+            if (savedLat && savedLon && savedName) {
+                fetchWeatherData(savedLat, savedLon, savedName);
+            } else {
+                document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-location-dot"></i> Stadt festlegen`;
+                setTimeout(promptLocation, 500);
+            }
+        }
+        loadSavedOrCreate();
 
         const images = ['pics/1.jpg', 'pics/2.jpg', 'pics/3.jpg', 'pics/4.jpg', 'pics/5.jpg', 'pics/6.jpg', 'pics/7.jpg', 'pics/8.jpg', 'pics/9.jpg', 'pics/10.jpg', 'pics/11.jpg', 'pics/12.jpg', 'pics/13.jpg'];
         let imgIndex = 0;
@@ -371,10 +390,7 @@
                 imgElement.style.opacity = 1;
             }, 800);
         }
-        
-        if(images.length > 0) {
-            setInterval(changeImage, 6000);
-        }
+        if(images.length > 0) { setInterval(changeImage, 6000); }
     </script>
 </body>
 </html>
