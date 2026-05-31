@@ -27,7 +27,7 @@
             padding: 40px;
             overflow: hidden;
             
-            /* Die neue "Enthüllungs"-Animation beim Laden */
+            /* "Enthüllungs"-Animation beim Laden */
             opacity: 0;
             filter: blur(20px);
             transform: scale(1.02);
@@ -35,7 +35,6 @@
             animation: epicReveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Animation: Seite entblößt sich fließend aus der Mitte heraus */
         @keyframes epicReveal {
             to {
                 opacity: 1;
@@ -56,18 +55,19 @@
             box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
         }
 
-        /* Top Bar (Uhrzeit & Wetter) */
+        /* Top Bar (Wetter links, Diashow rechts) */
         .top-bar {
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
         }
 
         .info-left {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            border-color: rgba(16, 185, 129, 0.1); /* Minimaler grüner Touch am Rand */
+            gap: 4px;
+            border-color: rgba(52, 211, 153, 0.15);
         }
 
         .time-display {
@@ -78,11 +78,39 @@
         }
 
         .weather-display {
-            font-size: 0.95rem;
-            color: #a7f3d0; /* Leicht grünlicher Text fürs Wetter */
+            font-size: 1rem;
+            color: #a7f3d0; 
             display: flex;
             align-items: center;
             gap: 8px;
+            font-weight: 500;
+        }
+
+        .weather-sub {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Bilder Diashow oben rechts */
+        .slideshow-container {
+            width: 160px;
+            height: 100px;
+            padding: 0; /* Keine innere Polsterung, damit das Bild bündig abschließt */
+            overflow: hidden;
+            border-radius: 20px;
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .slideshow-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            opacity: 1;
+            transition: opacity 0.8s ease-in-out; /* Super smoother Übergang */
         }
 
         /* Center Content (Begrüßung & Suche) */
@@ -91,14 +119,13 @@
             max-width: 680px;
             width: 100%;
             margin: 0 auto;
-            transform: translateY(-30px);
+            transform: translateY(-20px);
         }
 
         .greeting {
             font-size: 3.8rem;
             font-weight: 700;
             margin-bottom: 30px;
-            /* Verlauf passend zum neuen Design */
             background: linear-gradient(to right, #ffffff, #a7f3d0, #34d399);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -137,7 +164,6 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
-        /* Smooth Fokus-Effekt mit leicht grünem Glow */
         .search-input:focus {
             background: rgba(255, 255, 255, 0.06);
             border-color: #34d399;
@@ -189,7 +215,7 @@
             letter-spacing: 0.5px;
         }
         
-        /* Farb-Azentuierung bei Hover */
+        /* Icon-Farben beim Hover */
         .shortcut-card:hover .fa-youtube { color: #ff0000; }
         .shortcut-card:hover .fa-robot { color: #10a37f; }
         .shortcut-card:hover .fa-wand-magic-sparkles { color: #a855f7; }
@@ -205,7 +231,14 @@
     <div class="top-bar">
         <div class="info-left glass-card">
             <div class="time-display" id="clock">00:00:00</div>
-            <div class="weather-display" id="weather"><i class="fa-solid fa-cloud-sun"></i> Lade Wetter...</div>
+            <div class="weather-display" id="weather-main">
+                <i class="fa-solid fa-spinner fa-spin"></i> Lade Wetter...
+            </div>
+            <div class="weather-sub" id="weather-sub"></div>
+        </div>
+
+        <div class="slideshow-container glass-card">
+            <img id="slideshow-img" src="pics/1.jpg" onerror="this.style.display='none';" alt="Diashow">
         </div>
     </div>
 
@@ -281,30 +314,78 @@
         setInterval(updateTimeAndGreeting, 1000);
         updateTimeAndGreeting();
 
-        // 2. Wetter-Abfrage via Geolocation
+        // 2. Erweitertes Wetter via Open-Meteo API
         function getWeather() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(position => {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
                     
-                    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+                    // Fragt aktuelle Daten + stündlichen UV-Index ab
+                    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,weather_code&hourly=uv_index&timezone=auto`)
                         .then(response => response.json())
                         .then(data => {
-                            const temp = Math.round(data.current_weather.temperature);
-                            document.getElementById('weather').innerHTML = `<i class="fa-solid fa-temperature-half"></i> ${temp}°C`;
+                            const current = data.current;
+                            const temp = Math.round(current.temperature_2m);
+                            const precip = current.precipitation;
+                            const code = current.weather_code;
+                            
+                            // UV-Index für die aktuelle Stunde ermitteln
+                            const currentHour = new Date().getHours();
+                            const uvIndex = data.hourly.uv_index[currentHour] !== undefined ? Math.round(data.hourly.uv_index[currentHour]) : 0;
+                            
+                            // WMO Wetter-Codes interpretieren (Zustand & passendes Icon)
+                            let condition = "Unbekannt";
+                            let icon = "fa-cloud";
+
+                            if (code === 0) { condition = "Klar"; icon = "fa-sun"; }
+                            else if ([1, 2, 3].includes(code)) { condition = "Bewölkt"; icon = "fa-cloud-sun"; }
+                            else if ([45, 48].includes(code)) { condition = "Nebel"; icon = "fa-smog"; }
+                            else if ([51, 53, 55].includes(code)) { condition = "Nieselregen"; icon = "fa-cloud-rain"; }
+                            else if ([61, 63, 65, 80, 81, 82].includes(code)) { condition = "Regen"; icon = "fa-cloud-showers-heavy"; }
+                            else if ([71, 73, 75, 85, 86].includes(code)) { condition = "Schnee"; icon = "fa-snowflake"; }
+                            else if ([95, 96, 99].includes(code)) { condition = "Gewitter"; icon = "fa-cloud-bolt"; }
+
+                            // HTML befüllen
+                            document.getElementById('weather-main').innerHTML = `<i class="fa-solid ${icon}"></i> ${temp}°C · ${condition}`;
+                            document.getElementById('weather-sub').innerHTML = `<span><i class="fa-solid fa-droplet"></i> ${precip}mm</span> <span><i class="fa-solid fa-triangle-exclamation"></i> UV: ${uvIndex}</span>`;
                         })
                         .catch(() => {
-                            document.getElementById('weather').innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Wetter N/A`;
+                            document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Wetter N/A`;
                         });
                 }, () => {
-                    document.getElementById('weather').innerHTML = `<i class="fa-solid fa-location-dot"></i> Standort blockiert`;
+                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-location-dot"></i> Standort blockiert`;
                 });
             } else {
-                document.getElementById('weather').innerHTML = `Nicht unterstützt`;
+                document.getElementById('weather-main').innerHTML = `Nicht unterstützt`;
             }
         }
         getWeather();
+
+        // 3. Bilder-Diashow Logik
+        // Trage hier einfach alle Dateinamen ein, die du in deinem "pics"-Ordner hast
+        const images = ['pics/1.jpg', 'pics/2.jpg', 'pics/3.jpg', 'pics/4.jpg'];
+        let imgIndex = 0;
+        const imgElement = document.getElementById('slideshow-img');
+
+        function changeImage() {
+            if (images.length === 0) return;
+            
+            // Erst ausfaden lassen
+            imgElement.style.opacity = 0;
+            
+            setTimeout(() => {
+                imgIndex = (imgIndex + 1) % images.length;
+                imgElement.src = images[imgIndex];
+                // Wieder einfaden lassen
+                imgElement.style.opacity = 1;
+            }, 800); // Wartet exakt, bis das Ausfaden fertig ist (siehe CSS transition)
+        }
+        
+        // Alle 6 Sekunden das Bild wechseln
+        if(images.length > 0) {
+            setInterval(changeImage, 6000);
+        }
     </script>
 </body>
 </html>
