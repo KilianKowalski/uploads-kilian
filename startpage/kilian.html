@@ -16,8 +16,9 @@
         }
 
         body {
-            background: linear-gradient(135deg, #060a07 0%, #0b130f 50%, #102219 100%);
-            color: #f3f4f6;
+            /* Extrem dunkler, fast schwarzer Hintergrund mit minimalem grünen Schimmer */
+            background: linear-gradient(135deg, #030504 0%, #050a07 50%, #08100b 100%);
+            color: #cbd5e1; /* Weiches Hellgrau statt reinem Weiß */
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -42,13 +43,13 @@
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.4); /* Dunklere Karten */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
             border-radius: 24px;
             padding: 20px 30px;
-            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
+            box-shadow: 0 15px 50px 0 rgba(0, 0, 0, 0.6);
         }
 
         .top-bar {
@@ -72,7 +73,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            border-color: rgba(52, 211, 153, 0.15);
+            border-color: rgba(16, 185, 129, 0.05);
             width: 100%;
         }
 
@@ -80,12 +81,12 @@
             font-size: 1.8rem;
             font-weight: 600;
             letter-spacing: 1px;
-            color: #e2e8f0;
+            color: #94a3b8;
         }
 
         .weather-display {
             font-size: 1.1rem;
-            color: #a7f3d0; 
+            color: #10b981; /* Dezenteres, gedecktes Grün */
             display: flex;
             align-items: center;
             gap: 8px;
@@ -95,26 +96,25 @@
         }
         
         .weather-display:hover {
-            color: #ffffff;
+            color: #34d399;
         }
 
         .weather-sub {
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: #64748b;
             display: flex;
             gap: 12px;
         }
 
-        /* Integrierte Wetter-Suche */
         .weather-search-box {
             display: none;
             flex-direction: column;
             width: 100%;
-            background: rgba(11, 19, 15, 0.95);
-            border: 1px solid rgba(52, 211, 153, 0.3);
+            background: rgba(5, 10, 7, 0.98);
+            border: 1px solid rgba(16, 185, 129, 0.2);
             border-radius: 16px;
             padding: 10px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             position: absolute;
             top: 0;
             left: 0;
@@ -123,8 +123,8 @@
         .weather-search-box input {
             width: 100%;
             padding: 10px 14px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.05);
             border-radius: 10px;
             color: #fff;
             font-size: 0.95rem;
@@ -132,7 +132,7 @@
         }
         
         .weather-search-box input:focus {
-            border-color: #34d399;
+            border-color: #10b981;
         }
 
         .search-results {
@@ -145,25 +145,25 @@
         .search-results li {
             padding: 10px;
             font-size: 0.85rem;
-            color: #cbd5e1;
+            color: #94a3b8;
             cursor: pointer;
             border-radius: 8px;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
         .search-results li:hover {
-            background: rgba(52, 211, 153, 0.15);
+            background: rgba(16, 185, 129, 0.1);
             color: #fff;
         }
 
         .close-search {
             align-self: flex-end;
             font-size: 0.8rem;
-            color: #94a3b8;
+            color: #64748b;
             cursor: pointer;
             margin-bottom: 6px;
         }
-        .close-search:hover { color: #fff; }
+        .close-search:hover { color: #94a3b8; }
 
         .slideshow-container {
             width: 320px;
@@ -171,8 +171,9 @@
             padding: 0;
             overflow: hidden;
             border-radius: 28px;
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 12px 45px 0 rgba(0, 0, 0, 0.45);
+            border-color: rgba(255, 255, 255, 0.03);
+            box-shadow: 0 12px 45px 0 rgba(0, 0, 0, 0.6);
+            opacity: 0.85; /* Leicht abgedunkelt fürs Gesamtbild */
         }
 
         .slideshow-container img {
@@ -196,10 +197,11 @@
             font-size: 3.8rem;
             font-weight: 700;
             margin-bottom: 30px;
-            background: linear-gradient(to right, #ffffff, #a7f3d0, #34d399);
+            /* Dezenterer Farbverlauf von Mattweiß zu gedecktem Grün */
+            background: linear-gradient(to right, #e2e8f0, #a7f3d0, #059669);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 30px rgba(0,0,0,0.15);
+            text-shadow: 0 4px 30px rgba(0,0,0,0.3);
         }
 
         .search-form {
@@ -218,26 +220,27 @@
             left: 24px;
             font-size: 1.3rem;
             color: #4285F4;
+            opacity: 0.8;
         }
 
         .search-input {
             width: 100%;
             padding: 20px 25px 20px 70px;
             font-size: 1.15rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 50px;
             color: #fff;
             outline: none;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
         .search-input:focus {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: #34d399;
-            box-shadow: 0 0 40px rgba(52, 211, 153, 0.25);
-            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.02);
+            border-color: #10b981;
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.15);
+            transform: scale(1.01);
         }
 
         .shortcuts-container {
@@ -255,26 +258,22 @@
             width: 100px;
             height: 100px;
             text-decoration: none;
-            color: #94a3b8;
+            color: #64748b;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .shortcut-card:hover {
-            transform: translateY(-10px);
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(52, 211, 153, 0.3);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+            color: #e2e8f0;
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(16, 185, 129, 0.2);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
         }
 
         .shortcut-card i {
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 8px;
             transition: transform 0.3s ease;
-        }
-
-        .shortcut-card:hover i {
-            transform: scale(1.1);
         }
 
         .shortcut-card span {
@@ -283,13 +282,14 @@
             letter-spacing: 0.5px;
         }
         
-        .shortcut-card:hover .fa-youtube { color: #ff0000; }
-        .shortcut-card:hover .fa-robot { color: #10a37f; }
-        .shortcut-card:hover .fa-wand-magic-sparkles { color: #a855f7; }
-        .shortcut-card:hover .fa-film { color: #e50914; }
-        .shortcut-card:hover .fa-twitch { color: #9146ff; }
-        .shortcut-card:hover .fa-amazon { color: #ff9900; }
-        .shortcut-card:hover .fa-github { color: #ffffff; }
+        /* Icons im Hover-Zustand leicht entsättigt für edleren Look */
+        .shortcut-card:hover .fa-youtube { color: #cc1818; }
+        .shortcut-card:hover .fa-robot { color: #0e8568; }
+        .shortcut-card:hover .fa-wand-magic-sparkles { color: #8b5cf6; }
+        .shortcut-card:hover .fa-film { color: #b91c1c; }
+        .shortcut-card:hover .fa-twitch { color: #7c3aed; }
+        .shortcut-card:hover .fa-amazon { color: #d97706; }
+        .shortcut-card:hover .fa-github { color: #e2e8f0; }
 
     </style>
 </head>
@@ -360,7 +360,6 @@
     </div>
 
     <script>
-        // 1. Live Uhrzeit & Begrüßung
         function updateTimeAndGreeting() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -382,7 +381,6 @@
         setInterval(updateTimeAndGreeting, 1000);
         updateTimeAndGreeting();
 
-        // 2. Wetter- und Such-Logik mit Autocomplete
         let searchTimeout;
         const searchBox = document.getElementById('weather-search-box');
         const searchInput = document.getElementById('weather-search-input');
@@ -407,7 +405,6 @@
                 return;
             }
 
-            // Wartet kurz ab, damit nicht bei jedem Tastendruck die API gestresst wird
             searchTimeout = setTimeout(() => {
                 fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5&accept-language=de`)
                     .then(res => res.json())
@@ -415,8 +412,6 @@
                         resultsList.innerHTML = '';
                         data.forEach(place => {
                             const li = document.createElement('li');
-                            
-                            // Erstellt eine verständliche Beschreibung (Stadt, Bundesland/Region)
                             const city = place.address.city || place.address.town || place.address.village || place.address.state_district || place.name;
                             const state = place.address.state || '';
                             const country = place.address.country === 'Deutschland' ? '' : `, ${place.address.country}`;
@@ -440,7 +435,6 @@
         }
 
         function fetchWeatherData(lat, lon, name) {
-            // Holt Temperatur, Wettercode sowie stündliche Werte für die Regenwahrscheinlichkeit und den UV-Index
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=precipitation_probability,uv_index&timezone=auto`)
                 .then(response => response.json())
                 .then(data => {
@@ -449,7 +443,6 @@
                     const code = current.weather_code;
                     
                     const currentHour = new Date().getHours();
-                    // Niederschlagswahrscheinlichkeit in % extrahieren
                     const rainProb = data.hourly.precipitation_probability[currentHour] !== undefined ? data.hourly.precipitation_probability[currentHour] : 0;
                     const uvIndex = data.hourly.uv_index[currentHour] !== undefined ? Math.round(data.hourly.uv_index[currentHour]) : 0;
                     
@@ -486,7 +479,6 @@
         }
         loadSavedOrCreate();
 
-        // 3. Bilder-Diashow Logik
         const images = ['pics/1.jpg', 'pics/2.jpg', 'pics/3.jpg', 'pics/4.jpg'];
         let imgIndex = 0;
         const imgElement = document.getElementById('slideshow-img');
