@@ -223,7 +223,7 @@
         <div class="info-left glass-card">
             <div class="time-display" id="clock">00:00:00</div>
             <div class="weather-display" id="weather-main">
-                <i class="fa-solid fa-spinner fa-spin"></i> Lade Wetter...
+                <i class="fa-solid fa-spinner fa-spin"></i> Lade Wetter & Ort...
             </div>
             <div class="weather-sub" id="weather-sub"></div>
         </div>
@@ -310,33 +310,44 @@
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
                     
-                    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,weather_code&hourly=uv_index&timezone=auto`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const current = data.current;
-                            const temp = Math.round(current.temperature_2m);
-                            const precip = current.precipitation;
-                            const code = current.weather_code;
-                            
-                            const currentHour = new Date().getHours();
-                            const uvIndex = data.hourly.uv_index[currentHour] !== undefined ? Math.round(data.hourly.uv_index[currentHour]) : 0;
-                            
-                            let condition = "Unbekannt";
-                            let icon = "fa-cloud";
-
-                            if (code === 0) { condition = "Klar"; icon = "fa-sun"; }
-                            else if ([1, 2, 3].includes(code)) { condition = "Bewölkt"; icon = "fa-cloud-sun"; }
-                            else if ([45, 48].includes(code)) { condition = "Nebel"; icon = "fa-smog"; }
-                            else if ([51, 53, 55].includes(code)) { condition = "Nieselregen"; icon = "fa-cloud-rain"; }
-                            else if ([61, 63, 65, 80, 81, 82].includes(code)) { condition = "Regen"; icon = "fa-cloud-showers-heavy"; }
-                            else if ([71, 73, 75, 85, 86].includes(code)) { condition = "Schnee"; icon = "fa-snowflake"; }
-                            else if ([95, 96, 99].includes(code)) { condition = "Gewitter"; icon = "fa-cloud-bolt"; }
-
-                            document.getElementById('weather-main').innerHTML = `<i class="fa-solid ${icon}"></i> ${temp}°C · ${condition}`;
-                            document.getElementById('weather-sub').innerHTML = `<span><i class="fa-solid fa-droplet"></i> ${precip}mm</span> <span><i class="fa-solid fa-triangle-exclamation"></i> UV: ${uvIndex}</span>`;
+                    let locationName = "";
+                    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`)
+                        .then(res => res.json())
+                        .then(locData => {
+                            locationName = locData.address.city || locData.address.town || locData.address.village || locData.address.suburb || "Dein Standort";
                         })
                         .catch(() => {
-                            document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Wetter N/A`;
+                            locationName = "Dein Standort";
+                        })
+                        .finally(() => {
+                            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,weather_code&hourly=uv_index&timezone=auto`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    const current = data.current;
+                                    const temp = Math.round(current.temperature_2m);
+                                    const precip = current.precipitation;
+                                    const code = current.weather_code;
+                                    
+                                    const currentHour = new Date().getHours();
+                                    const uvIndex = data.hourly.uv_index[currentHour] !== undefined ? Math.round(data.hourly.uv_index[currentHour]) : 0;
+                                    
+                                    let condition = "Unbekannt";
+                                    let icon = "fa-cloud";
+
+                                    if (code === 0) { condition = "Klar"; icon = "fa-sun"; }
+                                    else if ([1, 2, 3].includes(code)) { condition = "Bewölkt"; icon = "fa-cloud-sun"; }
+                                    else if ([45, 48].includes(code)) { condition = "Nebel"; icon = "fa-smog"; }
+                                    else if ([51, 53, 55].includes(code)) { condition = "Nieselregen"; icon = "fa-cloud-rain"; }
+                                    else if ([61, 63, 65, 80, 81, 82].includes(code)) { condition = "Regen"; icon = "fa-cloud-showers-heavy"; }
+                                    else if ([71, 73, 75, 85, 86].includes(code)) { condition = "Schnee"; icon = "fa-snowflake"; }
+                                    else if ([95, 96, 99].includes(code)) { condition = "Gewitter"; icon = "fa-cloud-bolt"; }
+
+                                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid ${icon}"></i> ${locationName} · ${temp}°C · ${condition}`;
+                                    document.getElementById('weather-sub').innerHTML = `<span><i class="fa-solid fa-droplet"></i> ${precip}mm</span> <span><i class="fa-solid fa-triangle-exclamation"></i> UV: ${uvIndex}</span>`;
+                                })
+                                .catch(() => {
+                                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Wetter N/A`;
+                                });
                         });
                 }, () => {
                     document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-location-dot"></i> Standort blockiert`;
@@ -353,9 +364,7 @@
 
         function changeImage() {
             if (images.length === 0) return;
-            
             imgElement.style.opacity = 0;
-            
             setTimeout(() => {
                 imgIndex = (imgIndex + 1) % images.length;
                 imgElement.src = images[imgIndex];
