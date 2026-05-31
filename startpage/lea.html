@@ -16,8 +16,9 @@
         }
 
         body {
-            background: linear-gradient(135deg, #040814 0%, #081026 50%, #0f1d3a 100%);
-            color: #f3f4f6;
+            /* Angenehmes, dunkles Anthrazit-Grau */
+            background: linear-gradient(135deg, #111317 0%, #16181e 50%, #1c1f26 100%);
+            color: #e2e8f0;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -45,7 +46,8 @@
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            /* Sichtbare Rahmen mit dezentem blauem Touch */
+            border: 1px solid rgba(96, 165, 250, 0.15);
             border-radius: 24px;
             padding: 20px 30px;
             box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
@@ -54,16 +56,25 @@
         .top-bar {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .weather-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            width: 350px;
         }
 
         .info-left {
             display: flex;
             flex-direction: column;
             gap: 6px;
-            border-color: rgba(96, 165, 250, 0.15); 
-            align-self: center;
+            width: 100%;
         }
 
         .time-display {
@@ -75,12 +86,13 @@
 
         .weather-display {
             font-size: 1.1rem;
-            color: #93c5fd; 
+            color: #60a5fa; /* Schönes, klares Blau */
             display: flex;
             align-items: center;
             gap: 8px;
             font-weight: 500;
-            cursor: pointer; /* Zeigt, dass man draufklicken kann */
+            cursor: pointer;
+            transition: color 0.2s;
         }
         
         .weather-display:hover {
@@ -94,13 +106,72 @@
             gap: 12px;
         }
 
+        .weather-search-box {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            background: rgba(22, 24, 30, 0.98);
+            border: 1px solid rgba(96, 165, 250, 0.4);
+            border-radius: 16px;
+            padding: 10px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .weather-search-box input {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        
+        .weather-search-box input:focus {
+            border-color: #3b82f6;
+        }
+
+        .search-results {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 8px;
+            list-style: none;
+        }
+
+        .search-results li {
+            padding: 10px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .search-results li:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #fff;
+        }
+
+        .close-search {
+            align-self: flex-end;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            cursor: pointer;
+            margin-bottom: 6px;
+        }
+        .close-search:hover { color: #fff; }
+
         .slideshow-container {
             width: 320px;
             height: 200px;
             padding: 0;
             overflow: hidden;
             border-radius: 28px;
-            border-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 12px 45px 0 rgba(0, 0, 0, 0.45);
         }
 
@@ -192,7 +263,7 @@
             transform: translateY(-10px);
             color: #ffffff;
             background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.4);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
 
@@ -225,12 +296,20 @@
 <body>
 
     <div class="top-bar">
-        <div class="info-left glass-card">
-            <div class="time-display" id="clock">00:00:00</div>
-            <div class="weather-display" id="weather-main" onclick="promptLocation()">
-                <i class="fa-solid fa-spinner fa-spin"></i> Lade Wetter...
+        <div class="weather-container">
+            <div class="info-left glass-card" id="weather-card">
+                <div class="time-display" id="clock">00:00:00</div>
+                <div class="weather-display" id="weather-main" onclick="openWeatherSearch()">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Lade Wetter...
+                </div>
+                <div class="weather-sub" id="weather-sub"></div>
             </div>
-            <div class="weather-sub" id="weather-sub"></div>
+
+            <div class="weather-search-box" id="weather-search-box">
+                <span class="close-search" onclick="closeWeatherSearch()"><i class="fa-solid fa-xmark"></i> Schließen</span>
+                <input type="text" id="weather-search-input" placeholder="Ort eingeben (z.B. Ulm)..." autocomplete="off">
+                <ul class="search-results" id="search-results"></ul>
+            </div>
         </div>
 
         <div class="slideshow-container glass-card">
@@ -302,46 +381,69 @@
         setInterval(updateTimeAndGreeting, 1000);
         updateTimeAndGreeting();
 
-        // Wetter & Speicher-Logik
-        function promptLocation() {
-            const userCity = prompt("Für welche Stadt möchtest du das Wetter sehen?");
-            if (userCity) {
-                document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Suche Stadt...`;
-                fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(userCity)}&format=json&limit=1`)
+        let searchTimeout;
+        const searchBox = document.getElementById('weather-search-box');
+        const searchInput = document.getElementById('weather-search-input');
+        const resultsList = document.getElementById('search-results');
+
+        function openWeatherSearch() {
+            searchBox.style.display = 'flex';
+            searchInput.focus();
+        }
+
+        function closeWeatherSearch() {
+            searchBox.style.display = 'none';
+            searchInput.value = '';
+            resultsList.innerHTML = '';
+        }
+
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            const query = searchInput.value.trim();
+            if (query.length < 2) {
+                resultsList.innerHTML = '';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5&accept-language=de`)
                     .then(res => res.json())
                     .then(data => {
-                        if (data.length > 0) {
-                            const lat = data[0].lat;
-                            const lon = data[0].lon;
-                            const name = data[0].display_name.split(',')[0];
-                            
-                            localStorage.setItem('weather_lat', lat);
-                            localStorage.setItem('weather_lon', lon);
-                            localStorage.setItem('weather_name', name);
-                            
-                            fetchWeatherData(lat, lon, name);
-                        } else {
-                            alert("Stadt nicht gefunden. Bitte versuche es erneut.");
-                            loadSavedOrCreate();
-                        }
+                        resultsList.innerHTML = '';
+                        data.forEach(place => {
+                            const li = document.createElement('li');
+                            const city = place.address.city || place.address.town || place.address.village || place.address.state_district || place.name;
+                            const state = place.address.state || '';
+                            const country = place.address.country === 'Deutschland' ? '' : `, ${place.address.country}`;
+                            const displayName = `${city} (${state}${country})`;
+
+                            li.textContent = displayName;
+                            li.onclick = () => selectLocation(place.lat, place.lon, city);
+                            resultsList.appendChild(li);
+                        });
                     })
-                    .catch(() => {
-                        alert("Fehler bei der Ortssuche.");
-                        loadSavedOrCreate();
-                    });
-            }
+                    .catch(() => {});
+            }, 400);
+        });
+
+        function selectLocation(lat, lon, name) {
+            localStorage.setItem('weather_lat', lat);
+            localStorage.setItem('weather_lon', lon);
+            localStorage.setItem('weather_name', name);
+            fetchWeatherData(lat, lon, name);
+            closeWeatherSearch();
         }
 
         function fetchWeatherData(lat, lon, name) {
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,weather_code&hourly=uv_index&timezone=auto`)
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=precipitation_probability,uv_index&timezone=auto`)
                 .then(response => response.json())
                 .then(data => {
                     const current = data.current;
                     const temp = Math.round(current.temperature_2m);
-                    const precip = current.precipitation;
                     const code = current.weather_code;
                     
                     const currentHour = new Date().getHours();
+                    const rainProb = data.hourly.precipitation_probability[currentHour] !== undefined ? data.hourly.precipitation_probability[currentHour] : 0;
                     const uvIndex = data.hourly.uv_index[currentHour] !== undefined ? Math.round(data.hourly.uv_index[currentHour]) : 0;
                     
                     let condition = "Unbekannt";
@@ -356,10 +458,10 @@
                     else if ([95, 96, 99].includes(code)) { condition = "Gewitter"; icon = "fa-cloud-bolt"; }
 
                     document.getElementById('weather-main').innerHTML = `<i class="fa-solid ${icon}"></i> ${name} · ${temp}°C · ${condition}`;
-                    document.getElementById('weather-sub').innerHTML = `<span><i class="fa-solid fa-droplet"></i> ${precip}mm</span> <span><i class="fa-solid fa-triangle-exclamation"></i> UV: ${uvIndex}</span>`;
+                    document.getElementById('weather-sub').innerHTML = `<span><i class="fa-solid fa-umbrella"></i> ${rainProb}% Regen</span> <span><i class="fa-solid fa-sun"></i> UV: ${uvIndex}</span>`;
                 })
                 .catch(() => {
-                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Wetter N/A`;
+                    document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Wetter-Fehler`;
                 });
         }
 
@@ -371,8 +473,8 @@
             if (savedLat && savedLon && savedName) {
                 fetchWeatherData(savedLat, savedLon, savedName);
             } else {
-                document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-location-dot"></i> Stadt festlegen`;
-                setTimeout(promptLocation, 500);
+                document.getElementById('weather-main').innerHTML = `<i class="fa-solid fa-location-dot"></i> Ort festlegen (Klick)`;
+                openWeatherSearch();
             }
         }
         loadSavedOrCreate();
