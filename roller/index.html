@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Roller Öl-Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Modernes, iPhone-ähnliches Design */
+        :root {
+            --primary: #007aff;
+            --bg: #f2f2f7;
+            --card-bg: #ffffff;
+            --text: #1c1c1e;
+            --danger: #ff3b30;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 80px; /* Platz für Scrollen */
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d1d6;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            accent-color: var(--danger);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button.secondary {
+            background-color: #e5e5ea;
+            color: var(--primary);
+        }
+
+        button:active {
+            opacity: 0.8;
+        }
+
+        /* Tabellen-Design */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #e5e5ea;
+        }
+
+        th {
+            color: #8e8e93;
+            font-weight: normal;
+        }
+
+        .warning-icon {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        /* Export/Import Buttons */
+        .data-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .data-actions button {
+            margin-top: 0;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🛵 Öl-Tracker</h1>
+
+    <div class="card">
+        <div class="form-group">
+            <label for="date">Datum</label>
+            <input type="date" id="date" required>
+        </div>
+        <div class="form-group">
+            <label for="km">Kilometerstand (km)</label>
+            <input type="number" id="km" placeholder="z.B. 12500" required>
+        </div>
+        <div class="form-group">
+            <label for="oil">Eingefülltes Öl (ml)</label>
+            <input type="number" id="oil" placeholder="z.B. 200" required>
+        </div>
+        <div class="checkbox-group">
+            <input type="checkbox" id="warningLight">
+            <label for="warningLight" style="margin: 0; color: #ff3b30;">Rote Öllampe leuchtete?</label>
+        </div>
+        <button onclick="saveEntry()">Eintrag Speichern</button>
+    </div>
+
+    <div class="card">
+        <h2 style="font-size: 18px; margin-top: 0;">Ölverbrauch Verlauf</h2>
+        <canvas id="oilChart"></canvas>
+    </div>
+
+    <div class="card">
+        <h2 style="font-size: 18px; margin-top: 0;">Historie</h2>
+        <div class="table-container">
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Datum</th>
+                        <th>KM</th>
+                        <th>Öl (ml)</th>
+                        <th>Warnung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 style="font-size: 18px; margin-top: 0;">Daten verwalten</h2>
+        <p style="font-size: 12px; color: #8e8e93;">Sichere deine Daten regelmäßig als Backup.</p>
+        <div class="data-actions">
+            <button class="secondary" onclick="exportData()">Exportieren</button>
+            <button class="secondary" onclick="document.getElementById('fileInput').click()">Importieren</button>
+            <input type="file" id="fileInput" accept=".json" onchange="importData(event)">
+        </div>
+    </div>
+
+    <script>
+        // Heutiges Datum als Standard setzen
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Daten aus dem LocalStorage laden oder leeres Array erstellen
+        let trackerData = JSON.parse(localStorage.getItem('rollerOilData')) || [];
+        let chartInstance = null;
+
+        // Hauptfunktion zum Aktualisieren der UI
+        function updateUI() {
+            // Nach Kilometerstand sortieren (aufsteigend)
+            trackerData.sort((a, b) => a.km - b.km);
+            renderTable();
+            renderChart();
+        }
+
+        // Neuen Eintrag speichern
+        function saveEntry() {
+            const date = document.getElementById('date').value;
+            const km = parseInt(document.getElementById('km').value);
+            const oil = parseInt(document.getElementById('oil').value);
+            const warningLight = document.getElementById('warningLight').checked;
+
+            if (!date || isNaN(km) || isNaN(oil)) {
+                alert("Bitte fülle Datum, Kilometerstand und Ölmenge aus.");
+                return;
+            }
+
+            const entry = { date, km, oil, warningLight, id: Date.now() };
+            trackerData.push(entry);
+            
+            // In lokaler Datenbank speichern
+            localStorage.setItem('rollerOilData', JSON.stringify(trackerData));
+            
+            // Felder zurücksetzen (außer Datum)
+            document.getElementById('km').value = '';
+            document.getElementById('oil').value = '';
+            document.getElementById('warningLight').checked = false;
+
+            updateUI();
+        }
+
+        // Tabelle rendern
+        function renderTable() {
+            const tbody = document.querySelector('#historyTable tbody');
+            tbody.innerHTML = ''; // Vorherigen Inhalt löschen
+
+            // Rückwärts iterieren, damit der neueste Eintrag oben steht
+            [...trackerData].reverse().forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${new Date(entry.date).toLocaleDateString('de-DE')}</td>
+                    <td>${entry.km}</td>
+                    <td>${entry.oil}</td>
+                    <td class="warning-icon">${entry.warningLight ? '🚨 Ja' : '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Diagramm rendern
+        function renderChart() {
+            const ctx = document.getElementById('oilChart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy(); // Altes Diagramm löschen
+            }
+
+            const labels = trackerData.map(entry => entry.km + ' km');
+            const dataPoints = trackerData.map(entry => entry.oil);
+            
+            // Punkte rot färben, wenn die Lampe geleuchtet hat
+            const pointColors = trackerData.map(entry => entry.warningLight ? '#ff3b30' : '#007aff');
+            const pointRadius = trackerData.map(entry => entry.warningLight ? 6 : 4);
+
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Eingefülltes Öl (ml)',
+                        data: dataPoints,
+                        borderColor: '#007aff',
+                        backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                        pointBackgroundColor: pointColors,
+                        pointRadius: pointRadius,
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3 // Macht die Linie etwas geschwungen
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Menge in ml' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Daten als JSON-Datei exportieren
+        function exportData() {
+            if (trackerData.length === 0) {
+                alert("Keine Daten zum Exportieren vorhanden.");
+                return;
+            }
+            const dataStr = JSON.stringify(trackerData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `roller_oel_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Daten aus JSON-Datei importieren
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        trackerData = importedData;
+                        localStorage.setItem('rollerOilData', JSON.stringify(trackerData));
+                        updateUI();
+                        alert("Daten erfolgreich importiert!");
+                    } else {
+                        alert("Fehlerhafte Datei-Struktur.");
+                    }
+                } catch (err) {
+                    alert("Fehler beim Lesen der Datei.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Input zurücksetzen
+        }
+
+        // Beim Starten der Seite einmal UI updaten
+        updateUI();
+    </script>
+</body>
+</html>
