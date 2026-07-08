@@ -205,7 +205,7 @@ category:"Spieler",
 description:"Gibt dir einen Fallschirm.",
 keyboard:"SKYDIVE",
 phone:"1-999-759-3483"
-}
+},
 
 
 {
