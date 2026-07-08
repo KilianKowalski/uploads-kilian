@@ -209,3 +209,173 @@ phone:"1-999-759-3483"
 
 
 ];
+
+
+// Weitere Fahrzeuge
+
+{
+id:21,
+name:"Panzer (Rhino)",
+category:"Fahrzeuge",
+description:"Spawnt einen Rhino Kampfpanzer.",
+keyboard:"Keine",
+phone:"1-999-3328-4227"
+},
+
+
+{
+id:22,
+name:"Stuntflugzeug",
+category:"Fahrzeuge",
+description:"Spawnt ein Stuntflugzeug.",
+keyboard:"BARNSTORM",
+phone:"1-999-2276-78676"
+},
+
+
+{
+id:23,
+name:"Duster Flugzeug",
+category:"Fahrzeuge",
+description:"Spawnt ein landwirtschaftliches Flugzeug.",
+keyboard:"FLYSPRAY",
+phone:"1-999-359-77729"
+},
+
+
+{
+id:24,
+name:"PCJ-600 Motorrad",
+category:"Fahrzeuge",
+description:"Spawnt ein PCJ-600 Motorrad.",
+keyboard:"ROCKET",
+phone:"1-999-762-538"
+},
+
+
+{
+id:25,
+name:"Sanchez Motorrad",
+category:"Fahrzeuge",
+description:"Spawnt eine Sanchez Cross-Maschine.",
+keyboard:"OFFROAD",
+phone:"1-999-633-7623"
+},
+
+
+{
+id:26,
+name:"Golf Caddy",
+category:"Fahrzeuge",
+description:"Spawnt einen Golfwagen.",
+keyboard:"HOLEIN1",
+phone:"1-999-4653-461"
+},
+
+
+// Welt Cheats
+
+{
+id:27,
+name:"Zeitlupe beim Zielen",
+category:"Welt",
+description:"Verlangsamt die Zeit während des Zielens.",
+keyboard:"DEADEYE",
+phone:"1-999-332-3393"
+},
+
+
+{
+id:28,
+name:"Zeitlupe aktivieren",
+category:"Welt",
+description:"Aktiviert einen allgemeinen Zeitlupeneffekt.",
+keyboard:"SLOWMO",
+phone:"1-999-756-966"
+},
+
+
+{
+id:29,
+name:"Betrunkener Modus",
+category:"Welt",
+description:"Versetzt den Charakter in einen betrunkenen Zustand.",
+keyboard:"LIQUOR",
+phone:"1-999-547-861"
+},
+
+
+// Fähigkeiten
+
+{
+id:30,
+name:"Super Sprung verstärken",
+category:"Fähigkeiten",
+description:"Erlaubt extrem hohe Sprünge.",
+keyboard:"HOPTOIT",
+phone:"1-999-467-8648"
+},
+
+
+{
+id:31,
+name:"Skyfall",
+category:"Fähigkeiten",
+description:"Teleportiert dich in die Luft ohne Fallschirm.",
+keyboard:"SKYFALL",
+phone:"1-999-759-3255"
+},
+
+
+// Polizei
+
+{
+id:32,
+name:"Fahndung erhöhen",
+category:"Polizei",
+description:"Erhöht das Fahndungslevel um einen Stern.",
+keyboard:"FUGITIVE",
+phone:"1-999-3844-8483"
+},
+
+
+{
+id:33,
+name:"Fahndung entfernen",
+category:"Polizei",
+description:"Entfernt alle Sterne.",
+keyboard:"LAWYERUP",
+phone:"1-999-5299-3787"
+},
+
+
+// Waffen
+
+{
+id:34,
+name:"Alle Waffen",
+category:"Waffen",
+description:"Erhält alle Waffen und Munition.",
+keyboard:"TOOLUP",
+phone:"1-999-8665-87"
+},
+
+
+{
+id:35,
+name:"Explosive Schläge",
+category:"Waffen",
+description:"Nahkampfangriffe verursachen Explosionen.",
+keyboard:"HOTHANDS",
+phone:"1-999-4684-2637"
+},
+
+
+{
+id:36,
+name:"Feuer-Munition",
+category:"Waffen",
+description:"Geschosse setzen Gegner in Brand.",
+keyboard:"INCENDIARY",
+phone:"1-999-462-363-4279"
+}
