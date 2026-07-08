@@ -208,11 +208,6 @@ phone:"1-999-759-3483"
 }
 
 
-];
-
-
-// Weitere Fahrzeuge
-
 {
 id:21,
 name:"Panzer (Rhino)",
@@ -379,3 +374,6 @@ description:"Geschosse setzen Gegner in Brand.",
 keyboard:"INCENDIARY",
 phone:"1-999-462-363-4279"
 }
+
+
+];
