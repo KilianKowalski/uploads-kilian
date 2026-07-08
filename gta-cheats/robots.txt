@@ -1,0 +1,5 @@
+User-agent: *
+
+Allow: /
+
+Sitemap: https://kilianlol.com/gta-cheats/sitemap.xml
