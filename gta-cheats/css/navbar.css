@@ -1,0 +1,147 @@
+ /* ==========================================
+    Navbar Erweiterungen
+    ========================================== */
+
+
+/* Aktiver Menüpunkt */
+
+.nav-links li.active a{
+
+color:var(--primary2);
+
+background:
+
+rgba(46,168,255,.12);
+
+}
+
+
+
+/* Logo Animation */
+
+.logo{
+
+position:relative;
+
+cursor:pointer;
+
+transition:.3s ease;
+
+}
+
+
+.logo:hover{
+
+transform:scale(1.05);
+
+text-shadow:
+
+0 0 20px rgba(46,168,255,.7);
+
+}
+
+
+
+/* Mobile Navigation Vorbereitung */
+
+.menu-toggle{
+
+display:none;
+
+font-size:2rem;
+
+cursor:pointer;
+
+color:white;
+
+}
+
+
+
+/* Scroll Effekt */
+
+.navbar.scrolled{
+
+background:
+
+rgba(5,8,12,.85);
+
+box-shadow:
+
+0 10px 40px rgba(0,0,0,.35);
+
+}
+
+
+
+/* Links Animation */
+
+.nav-links li{
+
+position:relative;
+
+}
+
+
+.nav-links li::after{
+
+content:"";
+
+position:absolute;
+
+height:2px;
+
+width:0;
+
+bottom:-5px;
+
+left:50%;
+
+background:var(--primary);
+
+transition:.3s ease;
+
+transform:translateX(-50%);
+
+}
+
+
+.nav-links li:hover::after{
+
+width:70%;
+
+}
+
+
+
+/* Favoriten Badge */
+
+.favorite-badge{
+
+position:absolute;
+
+top:-8px;
+
+right:-8px;
+
+background:#ff5078;
+
+color:white;
+
+font-size:.7rem;
+
+width:20px;
+
+height:20px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:50%;
+
+font-weight:700;
+
+}
