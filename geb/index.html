@@ -1,168 +1,162 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>geb geb geb</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<title>geb geb geb</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      background: #000000;
-      color: #d0d0d0;
-      font-family: "Courier New", monospace;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  body {
+    background: #000;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Courier New", monospace;
+  }
 
-    .timer-container {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #000000;
-    }
+  .flapboard {
+    display: flex;
+    gap: 2vw;
+  }
 
-    .label {
-      font-size: 3vw;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: 2vh;
-      text-align: center;
-    }
+  .unit {
+    text-align: center;
+  }
 
-    .flapboard {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1vw;
-    }
+  .flip {
+    position: relative;
+    width: 18vw;
+    height: 20vh;
+    background: #111;
+    color: #d0d0d0;
+    border-radius: 1vw;
+    overflow: hidden;
+    box-shadow: 0 1vw 2vw rgba(0,0,0,0.7);
+    font-size: 10vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .unit {
-      background: #111111;
-      border-radius: 0.5vw;
-      box-shadow: 0 0.5vw 1vw rgba(0, 0, 0, 0.8);
-      padding: 2vh 2vw;
-      min-width: 18vw;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
+  .flip .top,
+  .flip .bottom,
+  .flip .top-flip,
+  .flip .bottom-flip {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    left: 0;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
 
-    .unit::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: #333333;
-      opacity: 0.8;
-    }
+  .flip .top { top: 0; border-bottom: 1px solid #333; }
+  .flip .bottom { bottom: 0; border-top: 1px solid #333; }
 
-    .value {
-      font-size: 6vw;
-      font-weight: bold;
-      letter-spacing: 0.1em;
-      display: block;
-    }
+  .flip .top-flip {
+    top: 0;
+    transform-origin: bottom;
+    animation: flipTop 0.3s ease-in forwards;
+  }
 
-    .unit-label {
-      font-size: 2vw;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      margin-top: 1vh;
-      color: #aaaaaa;
-    }
+  .flip .bottom-flip {
+    bottom: 0;
+    transform-origin: top;
+    animation: flipBottom 0.3s ease-out forwards;
+  }
 
-    @media (max-width: 768px) {
-      .label {
-        font-size: 6vw;
-      }
-      .unit {
-        min-width: 40vw;
-        border-radius: 2vw;
-      }
-      .value {
-        font-size: 12vw;
-      }
-      .unit-label {
-        font-size: 4vw;
-      }
-    }
-  </style>
+  @keyframes flipTop {
+    0% { transform: rotateX(0deg); }
+    100% { transform: rotateX(-90deg); }
+  }
+
+  @keyframes flipBottom {
+    0% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0deg); }
+  }
+
+  .label {
+    margin-top: 1vh;
+    color: #aaa;
+    font-size: 2vw;
+    letter-spacing: 0.2em;
+  }
+
+  @media (max-width: 768px) {
+    .flip { width: 35vw; height: 18vh; font-size: 18vw; border-radius: 3vw; }
+    .label { font-size: 5vw; }
+  }
+</style>
 </head>
 <body>
-  <div class="timer-container">
-    <div class="label">Countdown bis 9. August</div>
-    <div class="flapboard">
-      <div class="unit">
-        <span id="days" class="value">00</span>
-        <span class="unit-label">Tage</span>
-      </div>
-      <div class="unit">
-        <span id="hours" class="value">00</span>
-        <span class="unit-label">Stunden</span>
-      </div>
-      <div class="unit">
-        <span id="minutes" class="value">00</span>
-        <span class="unit-label">Minuten</span>
-      </div>
-      <div class="unit">
-        <span id="seconds" class="value">00</span>
-        <span class="unit-label">Sekunden</span>
-      </div>
-    </div>
+
+<div class="flapboard">
+  <div class="unit">
+    <div class="flip" id="days"></div>
+    <div class="label">Tage</div>
   </div>
+  <div class="unit">
+    <div class="flip" id="hours"></div>
+    <div class="label">Stunden</div>
+  </div>
+  <div class="unit">
+    <div class="flip" id="minutes"></div>
+    <div class="label">Minuten</div>
+  </div>
+  <div class="unit">
+    <div class="flip" id="seconds"></div>
+    <div class="label">Sekunden</div>
+  </div>
+</div>
 
-  <script>
-    function getNextTargetDate() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const targetThisYear = new Date(year, 7, 9, 0, 0, 0); // Monat 7 = August (0-basiert)
+<script>
+function nextTarget() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const target = new Date(year, 7, 9, 0, 0, 0);
+  return now <= target ? target : new Date(year + 1, 7, 9, 0, 0, 0);
+}
 
-      if (now <= targetThisYear) {
-        return targetThisYear;
-      } else {
-        return new Date(year + 1, 7, 9, 0, 0, 0);
-      }
-    }
+const target = nextTarget();
 
-    const targetDate = getNextTargetDate();
+function updateFlip(id, value) {
+  const flip = document.getElementById(id);
+  const current = flip.dataset.value;
 
-    function updateTimer() {
-      const now = new Date();
-      const diff = targetDate - now;
+  if (current == value) return;
+  flip.dataset.value = value;
 
-      if (diff <= 0) {
-        document.getElementById("days").textContent = "00";
-        document.getElementById("hours").textContent = "00";
-        document.getElementById("minutes").textContent = "00";
-        document.getElementById("seconds").textContent = "00";
-        return;
-      }
+  flip.innerHTML = `
+    <div class="top">${current || value}</div>
+    <div class="bottom">${value}</div>
+    <div class="top-flip">${current || value}</div>
+    <div class="bottom-flip">${value}</div>
+  `;
+}
 
-      const totalSeconds = Math.floor(diff / 1000);
-      const days = Math.floor(totalSeconds / (60 * 60 * 24));
-      const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
+function tick() {
+  const now = new Date();
+  const diff = target - now;
 
-      document.getElementById("days").textContent = String(days).padStart(2, "0");
-      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
-      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
-      document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
-    }
+  const total = Math.floor(diff / 1000);
+  const d = String(Math.floor(total / 86400)).padStart(2, "0");
+  const h = String(Math.floor((total % 86400) / 3600)).padStart(2, "0");
+  const m = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+  const s = String(total % 60).padStart(2, "0");
 
-    updateTimer();
-    setInterval(updateTimer, 1000);
-  </script>
+  updateFlip("days", d);
+  updateFlip("hours", h);
+  updateFlip("minutes", m);
+  updateFlip("seconds", s);
+}
+
+tick();
+setInterval(tick, 1000);
+</script>
+
 </body>
 </html>
