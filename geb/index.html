@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>geb geb geb</title>
+<title>Countdown</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -17,44 +17,17 @@
     color: #d0d0d0;
   }
 
-  /* Kreis Fortschritt */
+  /* Kreis Container */
   .circle-container {
     position: relative;
-    width: 40vh;
-    height: 40vh;
+    width: min(60vh, 60vw);
+    height: min(60vh, 60vw);
     margin-bottom: 5vh;
   }
 
-  .circle-bg {
-    stroke: #222;
-    stroke-width: 20;
-  }
-
-  .circle-progress {
-    stroke: #00eaff;
-    stroke-width: 20;
-    stroke-linecap: round;
-    transform: rotate(-90deg);
-    transform-origin: center;
-    transition: stroke-dashoffset 0.5s ease;
-  }
-
-  .circle-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-
-  .circle-text .percent {
-    font-size: 6vh;
-    font-weight: bold;
-  }
-
-  .circle-text .remaining {
-    font-size: 2.5vh;
-    color: #aaa;
+  svg {
+    width: 100%;
+    height: 100%;
   }
 
   /* Countdown */
@@ -92,31 +65,14 @@
     .label {
       font-size: 5vw;
     }
-    .circle-container {
-      width: 60vw;
-      height: 60vw;
-    }
-    .circle-text .percent {
-      font-size: 12vw;
-    }
-    .circle-text .remaining {
-      font-size: 5vw;
-    }
   }
 </style>
 </head>
 <body>
 
-<!-- Kreis Fortschritt -->
+<!-- Kreis mit Tagesstrichen -->
 <div class="circle-container">
-  <svg width="100%" height="100%">
-    <circle class="circle-bg" cx="50%" cy="50%" r="40%"></circle>
-    <circle class="circle-progress" cx="50%" cy="50%" r="40%" id="circle"></circle>
-  </svg>
-  <div class="circle-text">
-    <div class="percent" id="percent">0%</div>
-    <div class="remaining" id="remaining">Lädt…</div>
-  </div>
+  <svg id="yearCircle"></svg>
 </div>
 
 <!-- Countdown -->
@@ -150,16 +106,57 @@ function nextTarget() {
 const target = nextTarget();
 const start = new Date(target.getFullYear() - 1, 7, 9, 0, 0, 0);
 
-const circle = document.getElementById("circle");
-const percentText = document.getElementById("percent");
-const remainingText = document.getElementById("remaining");
+const svg = document.getElementById("yearCircle");
+const totalDays = 365;
 
-const radius = circle.r.baseVal.value;
-const circumference = 2 * Math.PI * radius;
+/* Kreis-Striche erzeugen */
+function createDayMarks() {
+  const size = svg.clientWidth;
+  const center = size / 2;
+  const radius = size * 0.42;
 
-circle.style.strokeDasharray = `${circumference}`;
-circle.style.strokeDashoffset = circumference;
+  svg.innerHTML = "";
 
+  for (let i = 0; i < totalDays; i++) {
+    const angle = (i / totalDays) * 2 * Math.PI;
+
+    const x1 = center + Math.cos(angle) * radius;
+    const y1 = center + Math.sin(angle) * radius;
+
+    const x2 = center + Math.cos(angle) * (radius - size * 0.03);
+    const y2 = center + Math.sin(angle) * (radius - size * 0.03);
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("stroke-width", size * 0.005);
+    line.setAttribute("stroke", "#333");
+    line.setAttribute("id", "day-" + i);
+
+    svg.appendChild(line);
+  }
+}
+
+createDayMarks();
+
+/* Fortschritt aktualisieren */
+function updateProgress() {
+  const now = new Date();
+  const passedDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+
+  for (let i = 0; i < totalDays; i++) {
+    const line = document.getElementById("day-" + i);
+    if (i <= passedDays) {
+      line.setAttribute("stroke", "#00eaff");
+    } else {
+      line.setAttribute("stroke", "#333");
+    }
+  }
+}
+
+/* Countdown aktualisieren */
 function tick() {
   const now = new Date();
   const diff = target - now;
@@ -175,20 +172,17 @@ function tick() {
   document.getElementById("minutes").textContent = m;
   document.getElementById("seconds").textContent = s;
 
-  // Kreis Fortschritt
-  const fullYearSeconds = (target - start) / 1000;
-  const passedSeconds = (now - start) / 1000;
-  const percent = Math.min(100, Math.max(0, (passedSeconds / fullYearSeconds) * 100));
-
-  percentText.textContent = Math.floor(percent) + "%";
-  remainingText.textContent = `${d} Tage übrig`;
-
-  const offset = circumference - (percent / 100) * circumference;
-  circle.style.strokeDashoffset = offset;
+  updateProgress();
 }
 
 tick();
 setInterval(tick, 1000);
+
+/* Neu zeichnen bei Größenänderung */
+window.addEventListener("resize", () => {
+  createDayMarks();
+  updateProgress();
+});
 </script>
 
 </body>
