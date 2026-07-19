@@ -10,6 +10,7 @@
     background: #000;
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: "Courier New", monospace;
@@ -19,6 +20,7 @@
   .countdown {
     display: flex;
     gap: 3vw;
+    margin-bottom: 5vh;
   }
 
   .unit {
@@ -41,6 +43,23 @@
     letter-spacing: 0.2em;
   }
 
+  /* Fortschrittsbalken */
+  .progress-container {
+    width: 80vw;
+    height: 3vh;
+    background: #222;
+    border-radius: 2vh;
+    overflow: hidden;
+    box-shadow: 0 0.5vw 1vw rgba(0,0,0,0.6);
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00aaff, #00ffd5);
+    transition: width 0.5s ease;
+  }
+
   @media (max-width: 768px) {
     .value {
       font-size: 18vw;
@@ -49,6 +68,10 @@
     }
     .label {
       font-size: 5vw;
+    }
+    .progress-container {
+      width: 90vw;
+      height: 4vh;
     }
   }
 </style>
@@ -74,6 +97,10 @@
   </div>
 </div>
 
+<div class="progress-container">
+  <div class="progress-bar" id="progress"></div>
+</div>
+
 <script>
 function nextTarget() {
   const now = new Date();
@@ -83,6 +110,7 @@ function nextTarget() {
 }
 
 const target = nextTarget();
+const start = new Date(target.getFullYear() - 1, 7, 9, 0, 0, 0); // 9.8. letztes Jahr
 
 function tick() {
   const now = new Date();
@@ -98,6 +126,13 @@ function tick() {
   document.getElementById("hours").textContent = h;
   document.getElementById("minutes").textContent = m;
   document.getElementById("seconds").textContent = s;
+
+  // Fortschrittsbalken berechnen
+  const fullYearSeconds = (target - start) / 1000;
+  const passedSeconds = (now - start) / 1000;
+  const percent = Math.min(100, Math.max(0, (passedSeconds / fullYearSeconds) * 100));
+
+  document.getElementById("progress").style.width = percent + "%";
 }
 
 tick();
