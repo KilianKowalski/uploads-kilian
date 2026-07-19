@@ -88,7 +88,7 @@
     height: 100%;
   }
 
-  /* Prozent jetzt UNTER dem Kreis */
+  /* Prozent unter dem Kreis */
   .percent-text {
     margin-top: 3vh;
     font-weight: bold;
@@ -128,7 +128,7 @@
     <svg id="yearCircle"></svg>
   </div>
 
-  <!-- Prozent jetzt unter dem Kreis -->
+  <!-- Prozent unter dem Kreis -->
   <div class="percent-text" id="percent">0.000000%</div>
 </section>
 
@@ -152,7 +152,6 @@ function createDayMarks() {
   const size = svg.clientWidth;
   const center = size / 2;
 
-  /* Kreis dick, aber nicht zu dick */
   const radiusOuter = size * 0.43;
   const radiusInner = size * 0.32;
 
@@ -173,9 +172,7 @@ function createDayMarks() {
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
 
-    /* Dicke leicht reduziert */
     line.setAttribute("stroke-width", size * 0.009);
-
     line.setAttribute("stroke", "#333");
     line.setAttribute("id", "day-" + i);
 
@@ -185,7 +182,7 @@ function createDayMarks() {
 
 createDayMarks();
 
-/* Fortschritt aktualisieren */
+/* Fortschritt aktualisieren — jetzt 60× pro Sekunde */
 function updateProgress() {
   const now = new Date();
   const passedDays = Math.floor((now - start) / (1000 * 60 * 60 * 24));
@@ -203,11 +200,10 @@ function updateProgress() {
   const passedSeconds = (now - start) / 1000;
   const percent = (passedSeconds / fullYearSeconds) * 100;
 
-  /* Jetzt 6 Nachkommastellen */
   percentText.textContent = percent.toFixed(6) + "%";
 }
 
-/* Countdown aktualisieren */
+/* Countdown aktualisiert weiterhin jede Sekunde */
 function tick() {
   const now = new Date();
   const diff = target - now;
@@ -222,12 +218,13 @@ function tick() {
   document.getElementById("hours").textContent = h;
   document.getElementById("minutes").textContent = m;
   document.getElementById("seconds").textContent = s;
-
-  updateProgress();
 }
 
 tick();
 setInterval(tick, 1000);
+
+/* Prozent 60× pro Sekunde aktualisieren */
+setInterval(updateProgress, 1000 / 60);
 
 /* Neu zeichnen bei Größenänderung */
 window.addEventListener("resize", () => {
