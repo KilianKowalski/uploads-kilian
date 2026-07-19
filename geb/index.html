@@ -43,7 +43,7 @@
     font-weight: bold;
     box-shadow: 0 1vw 2vw rgba(0,0,0,0.7);
     width: 100%;
-    color: #d0d0d0; /* Countdown Farbe */
+    color: #d0d0d0;
   }
 
   .label {
@@ -88,23 +88,13 @@
     height: 100%;
   }
 
+  /* Prozent jetzt UNTER dem Kreis */
   .percent-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    margin-top: 3vh;
     font-weight: bold;
-
-    /* Farbe identisch wie Countdown */
+    font-size: min(8vh, 8vw);
     color: #d0d0d0;
-
-    /* Dynamische Schriftgröße → passt IMMER */
-    font-size: calc(min(70vh, 70vw) * 0.11);
-
-    /* Sicherheit: Text darf nie breiter als Kreis sein */
-    max-width: 80%;
     text-align: center;
-    overflow: hidden;
   }
 </style>
 </head>
@@ -136,8 +126,10 @@
 <section class="circle-section">
   <div class="circle-container">
     <svg id="yearCircle"></svg>
-    <div class="percent-text" id="percent">0.00000%</div>
   </div>
+
+  <!-- Prozent jetzt unter dem Kreis -->
+  <div class="percent-text" id="percent">0.000000%</div>
 </section>
 
 <script>
@@ -211,8 +203,8 @@ function updateProgress() {
   const passedSeconds = (now - start) / 1000;
   const percent = (passedSeconds / fullYearSeconds) * 100;
 
-  /* Jetzt 5 Nachkommastellen */
-  percentText.textContent = percent.toFixed(5) + "%";
+  /* Jetzt 6 Nachkommastellen */
+  percentText.textContent = percent.toFixed(6) + "%";
 }
 
 /* Countdown aktualisieren */
