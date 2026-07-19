@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>geb geb geb</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000000;
+      color: #d0d0d0;
+      font-family: "Courier New", monospace;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #000000;
+    }
+
+    .label {
+      font-size: 3vw;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 2vh;
+      text-align: center;
+    }
+
+    .flapboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1vw;
+    }
+
+    .unit {
+      background: #111111;
+      border-radius: 0.5vw;
+      box-shadow: 0 0.5vw 1vw rgba(0, 0, 0, 0.8);
+      padding: 2vh 2vw;
+      min-width: 18vw;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .unit::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #333333;
+      opacity: 0.8;
+    }
+
+    .value {
+      font-size: 6vw;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      display: block;
+    }
+
+    .unit-label {
+      font-size: 2vw;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-top: 1vh;
+      color: #aaaaaa;
+    }
+
+    @media (max-width: 768px) {
+      .label {
+        font-size: 6vw;
+      }
+      .unit {
+        min-width: 40vw;
+        border-radius: 2vw;
+      }
+      .value {
+        font-size: 12vw;
+      }
+      .unit-label {
+        font-size: 4vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="timer-container">
+    <div class="label">Countdown bis 9. August</div>
+    <div class="flapboard">
+      <div class="unit">
+        <span id="days" class="value">00</span>
+        <span class="unit-label">Tage</span>
+      </div>
+      <div class="unit">
+        <span id="hours" class="value">00</span>
+        <span class="unit-label">Stunden</span>
+      </div>
+      <div class="unit">
+        <span id="minutes" class="value">00</span>
+        <span class="unit-label">Minuten</span>
+      </div>
+      <div class="unit">
+        <span id="seconds" class="value">00</span>
+        <span class="unit-label">Sekunden</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function getNextTargetDate() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const targetThisYear = new Date(year, 7, 9, 0, 0, 0); // Monat 7 = August (0-basiert)
+
+      if (now <= targetThisYear) {
+        return targetThisYear;
+      } else {
+        return new Date(year + 1, 7, 9, 0, 0, 0);
+      }
+    }
+
+    const targetDate = getNextTargetDate();
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = targetDate - now;
+
+      if (diff <= 0) {
+        document.getElementById("days").textContent = "00";
+        document.getElementById("hours").textContent = "00";
+        document.getElementById("minutes").textContent = "00";
+        document.getElementById("seconds").textContent = "00";
+        return;
+      }
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / (60 * 60 * 24));
+      const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      document.getElementById("days").textContent = String(days).padStart(2, "0");
+      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
+      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
+      document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
