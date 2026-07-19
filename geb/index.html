@@ -8,29 +8,20 @@
 
   body {
     background: #000;
+    color: #d0d0d0;
+    font-family: "Courier New", monospace;
+    overflow-x: hidden;
+  }
+
+  /* --- Hauptbereich: Countdown --- */
+  .countdown-section {
     height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-family: "Courier New", monospace;
-    color: #d0d0d0;
   }
 
-  /* Kreis Container */
-  .circle-container {
-    position: relative;
-    width: min(60vh, 60vw);
-    height: min(60vh, 60vw);
-    margin-bottom: 5vh;
-  }
-
-  svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  /* Countdown */
   .countdown {
     display: flex;
     gap: 3vw;
@@ -66,34 +57,69 @@
       font-size: 5vw;
     }
   }
+
+  /* --- Fortschrittskreis unten --- */
+  .circle-section {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .circle-container {
+    position: relative;
+    width: min(70vh, 70vw);
+    height: min(70vh, 70vw);
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .percent-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: min(10vh, 10vw);
+    font-weight: bold;
+    color: #00eaff;
+  }
 </style>
 </head>
 <body>
 
-<!-- Kreis mit Tagesstrichen -->
-<div class="circle-container">
-  <svg id="yearCircle"></svg>
-</div>
+<!-- Countdown oben -->
+<section class="countdown-section">
+  <div class="countdown">
+    <div class="unit">
+      <div class="value" id="days">00</div>
+      <div class="label">Tage</div>
+    </div>
+    <div class="unit">
+      <div class="value" id="hours">00</div>
+      <div class="label">Stunden</div>
+    </div>
+    <div class="unit">
+      <div class="value" id="minutes">00</div>
+      <div class="label">Minuten</div>
+    </div>
+    <div class="unit">
+      <div class="value" id="seconds">00</div>
+      <div class="label">Sekunden</div>
+    </div>
+  </div>
+</section>
 
-<!-- Countdown -->
-<div class="countdown">
-  <div class="unit">
-    <div class="value" id="days">00</div>
-    <div class="label">Tage</div>
+<!-- Fortschrittskreis unten -->
+<section class="circle-section">
+  <div class="circle-container">
+    <svg id="yearCircle"></svg>
+    <div class="percent-text" id="percent">0.000%</div>
   </div>
-  <div class="unit">
-    <div class="value" id="hours">00</div>
-    <div class="label">Stunden</div>
-  </div>
-  <div class="unit">
-    <div class="value" id="minutes">00</div>
-    <div class="label">Minuten</div>
-  </div>
-  <div class="unit">
-    <div class="value" id="seconds">00</div>
-    <div class="label">Sekunden</div>
-  </div>
-</div>
+</section>
 
 <script>
 function nextTarget() {
@@ -107,31 +133,33 @@ const target = nextTarget();
 const start = new Date(target.getFullYear() - 1, 7, 9, 0, 0, 0);
 
 const svg = document.getElementById("yearCircle");
+const percentText = document.getElementById("percent");
 const totalDays = 365;
 
 /* Kreis-Striche erzeugen */
 function createDayMarks() {
   const size = svg.clientWidth;
   const center = size / 2;
-  const radius = size * 0.42;
+  const radiusOuter = size * 0.45;
+  const radiusInner = size * 0.30;
 
   svg.innerHTML = "";
 
   for (let i = 0; i < totalDays; i++) {
     const angle = (i / totalDays) * 2 * Math.PI;
 
-    const x1 = center + Math.cos(angle) * radius;
-    const y1 = center + Math.sin(angle) * radius;
+    const x1 = center + Math.cos(angle) * radiusOuter;
+    const y1 = center + Math.sin(angle) * radiusOuter;
 
-    const x2 = center + Math.cos(angle) * (radius - size * 0.03);
-    const y2 = center + Math.sin(angle) * (radius - size * 0.03);
+    const x2 = center + Math.cos(angle) * radiusInner;
+    const y2 = center + Math.sin(angle) * radiusInner;
 
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", x1);
     line.setAttribute("y1", y1);
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
-    line.setAttribute("stroke-width", size * 0.005);
+    line.setAttribute("stroke-width", size * 0.01);
     line.setAttribute("stroke", "#333");
     line.setAttribute("id", "day-" + i);
 
@@ -154,6 +182,12 @@ function updateProgress() {
       line.setAttribute("stroke", "#333");
     }
   }
+
+  const fullYearSeconds = (target - start) / 1000;
+  const passedSeconds = (now - start) / 1000;
+  const percent = (passedSeconds / fullYearSeconds) * 100;
+
+  percentText.textContent = percent.toFixed(3) + "%";
 }
 
 /* Countdown aktualisieren */
