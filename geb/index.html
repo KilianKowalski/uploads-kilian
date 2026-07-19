@@ -16,7 +16,7 @@
   /* --- Hauptbereich: Countdown --- */
   .countdown-section {
     height: 100vh;
-    padding: 4vh 4vw; /* Abstand zum Rand */
+    padding: 4vh 4vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -62,14 +62,14 @@
       font-size: 2vw;
     }
     .countdown-section {
-      padding: 6vh 6vw; /* größerer Rand auf PC */
+      padding: 6vh 6vw;
     }
   }
 
   /* --- Fortschrittskreis unten --- */
   .circle-section {
     height: 100vh;
-    padding: 4vh 4vw; /* Abstand zum Rand */
+    padding: 4vh 4vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -92,9 +92,16 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: min(10vh, 10vw);
     font-weight: bold;
     color: #00eaff;
+
+    /* Dynamische Schriftgröße, damit sie NIE rausragt */
+    font-size: calc(min(70vh, 70vw) * 0.12);
+
+    /* Sicherheit: Text darf nie breiter als Kreis sein */
+    max-width: 80%;
+    text-align: center;
+    overflow: hidden;
   }
 </style>
 </head>
@@ -149,8 +156,10 @@ const totalDays = 365;
 function createDayMarks() {
   const size = svg.clientWidth;
   const center = size / 2;
-  const radiusOuter = size * 0.45;
-  const radiusInner = size * 0.30;
+
+  /* Kreis etwas dünner machen */
+  const radiusOuter = size * 0.43;
+  const radiusInner = size * 0.32;
 
   svg.innerHTML = "";
 
@@ -168,7 +177,10 @@ function createDayMarks() {
     line.setAttribute("y1", y1);
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
-    line.setAttribute("stroke-width", size * 0.01);
+
+    /* Dicke etwas reduziert */
+    line.setAttribute("stroke-width", size * 0.009);
+
     line.setAttribute("stroke", "#333");
     line.setAttribute("id", "day-" + i);
 
@@ -196,7 +208,6 @@ function updateProgress() {
   const passedSeconds = (now - start) / 1000;
   const percent = (passedSeconds / fullYearSeconds) * 100;
 
-  /* Hier geändert: 4 Nachkommastellen */
   percentText.textContent = percent.toFixed(4) + "%";
 }
 
