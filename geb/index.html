@@ -126,7 +126,7 @@
 <section class="circle-section">
   <div class="circle-container">
     <svg id="yearCircle"></svg>
-    <div class="percent-text" id="percent">0.000%</div>
+    <div class="percent-text" id="percent">0.0000%</div>
   </div>
 </section>
 
@@ -196,7 +196,8 @@ function updateProgress() {
   const passedSeconds = (now - start) / 1000;
   const percent = (passedSeconds / fullYearSeconds) * 100;
 
-  percentText.textContent = percent.toFixed(3) + "%";
+  /* Hier geändert: 4 Nachkommastellen */
+  percentText.textContent = percent.toFixed(4) + "%";
 }
 
 /* Countdown aktualisieren */
