@@ -43,6 +43,7 @@
     font-weight: bold;
     box-shadow: 0 1vw 2vw rgba(0,0,0,0.7);
     width: 100%;
+    color: #d0d0d0; /* Countdown Farbe */
   }
 
   .label {
@@ -93,10 +94,12 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
-    color: #00eaff;
 
-    /* Dynamische Schriftgröße, damit sie NIE rausragt */
-    font-size: calc(min(70vh, 70vw) * 0.12);
+    /* Farbe identisch wie Countdown */
+    color: #d0d0d0;
+
+    /* Dynamische Schriftgröße → passt IMMER */
+    font-size: calc(min(70vh, 70vw) * 0.11);
 
     /* Sicherheit: Text darf nie breiter als Kreis sein */
     max-width: 80%;
@@ -133,7 +136,7 @@
 <section class="circle-section">
   <div class="circle-container">
     <svg id="yearCircle"></svg>
-    <div class="percent-text" id="percent">0.0000%</div>
+    <div class="percent-text" id="percent">0.00000%</div>
   </div>
 </section>
 
@@ -157,7 +160,7 @@ function createDayMarks() {
   const size = svg.clientWidth;
   const center = size / 2;
 
-  /* Kreis etwas dünner machen */
+  /* Kreis dick, aber nicht zu dick */
   const radiusOuter = size * 0.43;
   const radiusInner = size * 0.32;
 
@@ -178,7 +181,7 @@ function createDayMarks() {
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
 
-    /* Dicke etwas reduziert */
+    /* Dicke leicht reduziert */
     line.setAttribute("stroke-width", size * 0.009);
 
     line.setAttribute("stroke", "#333");
@@ -208,7 +211,8 @@ function updateProgress() {
   const passedSeconds = (now - start) / 1000;
   const percent = (passedSeconds / fullYearSeconds) * 100;
 
-  percentText.textContent = percent.toFixed(4) + "%";
+  /* Jetzt 5 Nachkommastellen */
+  percentText.textContent = percent.toFixed(5) + "%";
 }
 
 /* Countdown aktualisieren */
